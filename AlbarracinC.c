@@ -6,7 +6,7 @@
 #define ENTER 13
 
 void manageData();
-void askPassword(int isValidPW, int *pisValidPW);
+void askPassword(int isValidPW, int *ptr_isValidPW);
 
 
 /* displayMenu shows the Graphic User Interface for the menu of the General Knowledge Quiz Game
