@@ -1,12 +1,23 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
-#include <conio.h>
+// #include <conio.h>
 
 #define ENTER 13
 
 void manageData();
 void askPassword(int isValidPW, int *ptr_isValidPW);
+
+/*
+ NOTES TO SELF:
+ - In order to implement password masking, include conio.h and uncomment code in askPassword function
+ - Try out all possible routes of the program to recheck inappropriate exits
+ - Add function descriptions when finished
+ */
+
+
+
+
 
 
 /* displayMenu shows the Graphic User Interface for the menu of the General Knowledge Quiz Game
@@ -23,6 +34,33 @@ displayMenu()
     printf("[3] Exit\n");
 }
 
+void addRecords()
+{
+    printf("Adding a record...\n");
+}
+
+void editRecords()
+{
+    printf("Editing a record...\n");
+}
+
+void deleteRecords()
+{
+    printf("Deleting a record...\n");
+}
+
+void importData()
+{
+    printf("Importing data...\n");
+}
+
+void exportData()
+{
+    printf("Exporting data...\n");
+}
+
+
+
 /* manageData allows the admin to add, edit, delete records, as well as import and export data after inputting the correct admin password
     @param <none>
     @return <none>
@@ -32,16 +70,64 @@ void
 manageData()
 {
 	int isValidPW = 0;
+    int nInput;
+    int bQuit = 0;
 	
+    // ask for the admin password
     askPassword(isValidPW, &isValidPW);
     
-    if (isValidPW == 1)
+    if (!isValidPW)
     {
-    	printf("Managing Data ...\n");
+        bQuit = 1;
 	}
-	else
-	{
-	}
+    else
+    {
+        printf("Managing Data ...\n");
+        
+        // display manageData options
+        printf("[1] Add a record\n");
+        printf("[2] Edit a record\n");
+        printf("[3] Delete a record\n");
+        printf("[4] Import data\n");
+        printf("[5] Export data\n");
+        printf("[6] Go back to MAIN MENU\n");
+        
+        scanf("%d", &nInput);
+        while (bQuit == 0)
+        {
+            switch (nInput)
+            {
+                case 1:
+                    addRecords();
+                    break;
+                    
+                case 2:
+                    editRecords();
+                    break;
+                    
+                case 3:
+                    deleteRecords();
+                    break;
+                    
+                case 4:
+                    importData();
+                    break;
+                    
+                case 5:
+                    exportData();
+                    break;
+                    
+                case 6:
+                    printf("Going back to MAIN MENU...\n");
+                    break;
+                    
+                default:
+                    printf("Please select one of the options provided.\n");
+                    break;
+            }
+            bQuit = 1;
+        }
+    }
 }
 
 /*
@@ -62,8 +148,8 @@ askPassword(int isValidPW, int *ptr_isValidPW)
     
     printf("Please input admin password: ");
     
+    /*
     // Mask password with asterisks
-    
     // if character entered is NOT the enter key
     while ((ch = _getch()) != 13)
     {
@@ -75,9 +161,10 @@ askPassword(int isValidPW, int *ptr_isValidPW)
 	// add null byte to specify end of string
     sPWInput[i] = '\0';
     printf("\n");
+     */
     
     // use only when editing in MacOS
-    //scanf("%s", sPWInput);
+    scanf("%s", sPWInput);
     
     // if password is valid
     if (strcmp(sPWInput, sADMINPW) == 0)
@@ -90,6 +177,7 @@ askPassword(int isValidPW, int *ptr_isValidPW)
     else if (strcmp(sPWInput, "1") == 0)
     {
         printf("Going back...\n");
+        *ptr_isValidPW = 0;
     }
     // if incorrect password
     else if (strcmp(sPWInput, sADMINPW) != 0)
@@ -97,6 +185,54 @@ askPassword(int isValidPW, int *ptr_isValidPW)
         printf("Incorrect Password. Try again.\n");
         printf("[1] Go back to Main Menu\n\n");
         askPassword(isValidPW, &isValidPW);
+    }
+}
+
+void playQuiz()
+{
+    printf("Playing quiz...\n");
+}
+
+void viewScores()
+{
+    printf("Viewing scores...\n");
+}
+
+void Play()
+{
+    int bQuit = 0;
+    int nInput;
+    
+    printf("Playing ...\n\n");
+    
+    // display playQuiz options
+    printf("[1] Play\n");
+    printf("[2] View Scores\n");
+    printf("[3] Go back to MAIN MENU\n");
+    
+    scanf("%d", &nInput);
+    
+    while (bQuit == 0)
+    {
+        switch (nInput)
+        {
+            case 1:
+                playQuiz();
+                break;
+                
+            case 2:
+                viewScores();
+                break;
+                
+            case 3:
+                printf("Exiting...\n");
+                break;
+                
+            default:
+                printf("Please select one of the options provided.\n");
+                break;
+        }
+        bQuit = 1;
     }
 }
 
@@ -118,7 +254,7 @@ int main()
                 break;
                     
             case 2:
-                printf("Playing ...\n");
+                Play();
                 break;
                     
             case 3:
@@ -130,7 +266,7 @@ int main()
                 printf("Please select one of the options provided.\n");
                 break;
         }
-    
+        
     }
     while (bQuit == 0);
     
