@@ -4,25 +4,40 @@
 // #include <conio.h>
 
 #define ENTER 13
+#define SIZE1 150
+#define SIZE2 30
+#define SIZEE 50
 
 // function declarations
 void displayMenu();
 void displaymanageData();
+void inputWspaces(char *s, int LEN);
 void addRecords();
 void editRecords();
 void deleteRecords();
-void importData();
-void exportData();
-void manageData();
+void importData(FILE * ptr_file);
+void exportData(FILE * ptr_file);
+void manageData(FILE * ptr_file);
 void askPassword(int isValidPW, int *ptr_isValidPW);
 void playQuiz();
 void viewScores();
 void Play();
 
+struct Data
+{
+    char sTopic[20];
+    int nQNum;
+    char question[SIZE1];
+    char choice1[SIZE2];
+    char choice2[SIZE2];
+    char choice3[SIZE2];
+    char answer[SIZE2];
+};
+
+
 /*
  NOTES TO SELF:
  - In order to implement password masking, include conio.h and uncomment code in askPassword function
- - Try out all possible routes of the program to recheck inappropriate exits
  - Add function descriptions when finished
  */
 
@@ -64,12 +79,12 @@ displaymanageData()
     Pre-condition: User has selected Manage Data from the Main Menu and has not yet opted to go back to Main Menu
 */
 void
-manageData()
+manageData(FILE * ptr_file)
 {
 	int isValidPW = 0;
     int nInput;
     int bQuit = 0;
-	
+    
     // ask for the admin password
     askPassword(isValidPW, &isValidPW);
     
@@ -98,11 +113,11 @@ manageData()
                     break;
                     
                 case 4:
-                    importData();
+                    importData(ptr_file);
                     break;
                     
                 case 5:
-                    exportData();
+                    exportData(ptr_file);
                     break;
                     
                 case 6:
@@ -129,9 +144,9 @@ void askPassword(int isValidPW, int *ptr_isValidPW)
 {
     const char sADMINPW[] = "Genquiz411";
     char sPWInput[11];
-    char ch;
-    int i = 0;
-    int n = 0;
+    // char ch;
+    // int i = 0;
+    // int n = 0;
     
     printf("Please input admin password: ");
     
@@ -178,10 +193,95 @@ void askPassword(int isValidPW, int *ptr_isValidPW)
     }
 }
 
-
-void addRecords()
+void
+inputWspaces(char *s, int LEN)
 {
+    int i = 0;
+    char temp;
+    char ch;
+    
+    // store dangling newline from previous input
+    scanf("%c", &temp);
+    
+    do
+    {
+        scanf("%c", &ch);
+        
+        if (ch != '\n')
+        {
+            s[i] = ch;
+            i++;
+            s[i] = '\0';
+        }
+    } while (i < LEN && ch != '\n');
+}
+
+
+void
+addRecords(struct Data * A)
+{
+    char sQuestion[SIZE1];
+    char sAnswer[SIZE2];
+    int i = 0;
+    int isRecorded = 0;
+    
     printf("Adding a record...\n");
+    
+    printf("Enter a question: ");
+    inputWspaces(sQuestion, SIZE1);
+    printf("Enter the answer: ");
+    scanf("%s", sAnswer);
+    
+    /*
+    // check if q&a are already in records
+    for (int i = 0; ((i < (SIZEE - 1)) && (!isRecorded)); i++)
+    {
+        if ((strcmp(sQuestion, A[i].question) == 0) && (strcmp(sAnswer, A[i].answer)))
+        {
+            printf("Q & A are already listed in the records.\n");
+            printf("%s, %d, %s, %s, %s, %s, %s\n\n", A[i].sTopic, A[i].nQNum, A[i].question, A[i].choice1, A[i].choice2, A[i].choice3, A[i].answer);
+            isRecorded = 1;
+            if (strcpy(A[i + 1].question, "\0"))
+            {
+                break;
+            }
+        }
+    }
+     */
+    
+    if (!isRecorded)
+    {
+        // assign input Q&A to array struct
+        strcpy(A[i].question, sQuestion);
+        strcpy(A[i].answer, sAnswer);
+        
+        printf("Question: %s\n", sQuestion);
+        printf("Answer: %s\n\n", sAnswer);
+        
+        printf("Please enter the remaining input needed: \n");
+        printf("Topic: ");
+        scanf("%s", A[i].sTopic);
+        printf("Choice 1: ");
+        scanf("%s", A[i].choice1);
+        printf("Choice 2: ");
+        scanf("%s", A[i].choice2);
+        printf("Choice 3: ");
+        scanf("%s", A[i].choice3);
+        
+        /*
+        // count how many questions are already assigned in the Topic
+        int nFlag = 0;
+        for (int k = 0; k < SIZEE; k++)
+        {
+            if (strcmp(A[i].sTopic, A[k].sTopic) == 0)
+            {
+                nFlag++;
+            }
+        }
+        // assign number of times the topic is found in the records to the question number
+        A[i].nQNum = nFlag;
+         */
+    }
 }
 
 void editRecords()
@@ -194,12 +294,37 @@ void deleteRecords()
     printf("Deleting a record...\n");
 }
 
-void importData()
+void importData(FILE * ptr_file)
 {
+    /*
+     INITIAL CODE
+     
+     void readRecords(struct Data * A)
+     {
+         char temp;
+         char temp1;
+         int i = 0;
+         
+         for (int i = 0; (i < SIZEE); i++)
+         {
+                 scanf("%s", A[i].sTopic);
+                 scanf("%d", &A[i].nQNum);
+                 inputWspaces(A[i].question, SIZE1);
+                 scanf("%s", A[i].choice1);
+                 scanf("%s", A[i].choice2);
+                 scanf("%s", A[i].choice3);
+                 scanf("%s", A[i].answer);
+             
+                 // store newline
+                 scanf("%ch", &temp);
+         }
+     }
+     */
+    
     printf("Importing data...\n");
 }
 
-void exportData()
+void exportData(FILE * ptr_file)
 {
     printf("Exporting data...\n");
 }
@@ -261,6 +386,8 @@ int main()
 {
     int nInput;
     bool bQuit = 0;
+    struct Data Records[SIZEE];
+    FILE * ptr_file = NULL;
     
     do
     {
@@ -271,7 +398,7 @@ int main()
         switch (nInput)
         {
             case 1:
-                manageData();
+                manageData(ptr_file);
                 break;
                     
             case 2:
@@ -290,6 +417,11 @@ int main()
         
     }
     while (bQuit == 0);
+    
+    for (int i = 0; i < SIZEE; i++)
+    {
+        printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[i].sTopic, Records[i].nQNum, Records[i].question, Records[i].choice1, Records[i].choice2, Records[i].choice3, Records[i].answer);
+    }
     
     return 0;
 }
