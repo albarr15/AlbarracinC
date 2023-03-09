@@ -16,7 +16,7 @@ void editRecords();
 void deleteRecords();
 void importData();
 void exportData();
-void askPassword(int isValidPW, int *ptr_isValidPW);
+void askPassword(int * ptr_isValidPW);
 void playQuiz();
 void viewScores();
 void Play();
@@ -37,7 +37,8 @@ struct Data
  NOTES TO SELF:
  - In order to implement password masking, include conio.h and uncomment code in askPassword function
  - Add function descriptions when finished
- - fix addRecords and manageData parameters
+ - fix iterations in addRecords
+ - apply fopen() and fclose() functions to read and write from txt file
  */
 
 
@@ -72,67 +73,6 @@ displaymanageData()
     printf("[6] Go back to MAIN MENU\n");
 }
 
-/*
-    askPassword requires the admin to user the correct admin password as well as masks the password with asterisks while it is being typed for additional security
-    @param isValidPW is an integer variable where the validity of the password input is stored
-        *ptr_isValidPW is a pointer to the variable 'isValidPW' in order for the manageData to check the validity of the password
-    @return <none>
-    Pre-condition: User has selected Manage Data from the menu, user cannot backspace or add spaces when entering the password
-*/
-void askPassword(int isValidPW, int *ptr_isValidPW)
-{
-    const char sADMINPW[] = "Genquiz411";
-    char sPWInput[11];
-    int ptr_isValidPW = &isValidPW;
-    // char ch;
-    // int i = 0;
-    // int n = 0;
-    
-    printf("Please input admin password: ");
-    
-    /*
-    // Mask password with asterisks
-    // if character entered is NOT the enter key
-    while ((ch = _getch()) != 13)
-    {
-        sPWInput[i] = ch;
-        printf("*");
-        i++;
-    }
-    
-    // add null byte to specify end of string
-    sPWInput[i] = '\0';
-    printf("\n");
-     */
-    
-    // use only when editing in MacOS
-    scanf("%s", sPWInput);
-    
-    // if password is correct
-    if (strcmp(sPWInput, sADMINPW) == 0)
-    {
-        // set isValidPW to 1
-        *ptr_isValidPW = 1;
-        printf("Accessing admin controls...\n");
-    }
-    // if input is 1,
-    else if (strcmp(sPWInput, "1") == 0)
-    {
-        // go back to main menu
-        printf("Going back...\n");
-        // set isValidPW to 0
-        *ptr_isValidPW = 0;
-    }
-    // if incorrect password
-    else if (strcmp(sPWInput, sADMINPW) != 0)
-    {
-        printf("Incorrect Password. Try again.\n");
-        printf("[1] Go back to Main Menu\n\n");
-        // re-attempt to ask password
-        askPassword(isValidPW, &isValidPW);
-    }
-}
-
 
 void addRecords(struct Data * A[])
 {
@@ -140,6 +80,8 @@ void addRecords(struct Data * A[])
     char sAnswer[SIZE2];
     int i = 0;
     int isRecorded = 0;
+    int index = 0;
+    int bFOUND = 0;
     
     printf("Adding a record...\n");
     
@@ -147,6 +89,21 @@ void addRecords(struct Data * A[])
     inputWspaces(sQuestion, SIZE1);
     printf("Enter the answer: ");
     scanf("%s", sAnswer);
+    
+    // find index of last Q&A in the array
+    for (int j = 0; (j < (SIZEE - 1)); j++)
+    {
+        if (!bFOUND)
+        {
+            if ((strcmp(A[j]->sTopic, "\0")) == 0)
+            {
+                bFOUND = 1;
+                index = j;
+            }
+        }
+    }
+    
+    printf("Index of last q&a found: %d\n", index);
     
     /*
     // check if q&a are already in records
@@ -211,7 +168,7 @@ void manageData(struct Data A[])
     int bQuit = 0;
     
     // ask for the admin password
-    askPassword(isValidPW, &isValidPW);
+    askPassword(&isValidPW);
     
     // if valid password
     if (isValidPW)
@@ -255,6 +212,71 @@ void manageData(struct Data A[])
                     break;
             }
         }
+    }
+}
+
+
+/*
+    askPassword requires the admin to user the correct admin password as well as masks the password with asterisks while it is being typed for additional security
+    @param isValidPW is an integer variable where the validity of the password input is stored
+        *ptr_isValidPW is a pointer to the variable 'isValidPW' in order for the manageData to check the validity of the password
+    @return <none>
+    Pre-condition: User has selected Manage Data from the menu, user cannot backspace or add spaces when entering the password
+*/
+void askPassword(int * ptr_isValidPW)
+{
+    const char sADMINPW[] = "Genquiz411";
+    char sPWInput[11];
+    // char ch;
+    // int i = 0;
+    int n = 0;
+    
+    printf("Please input admin password: ");
+    
+    /*
+    // Mask password with asterisks
+    // if character entered is NOT the enter key
+    while ((ch = _getch()) != 13)
+    {
+        sPWInput[i] = ch;
+        printf("*");
+        i++;
+    }
+    
+    // add null byte to specify end of string
+    sPWInput[i] = '\0';
+    printf("\n");
+     */
+    
+    // use only when editing in MacOS
+    scanf("%s", sPWInput);
+    printf("%s\n", sPWInput);
+    
+    // if password is correct
+    if (strcmp(sPWInput, sADMINPW) == 0)
+    {
+        printf("Accessing admin controls...\n");
+        // set isValidPW to 1
+        n = 1;
+        *ptr_isValidPW = n;
+        
+        printf("%d\n", *ptr_isValidPW);
+    }
+    // if input is 1,
+    else if (strcmp(sPWInput, "1") == 0)
+    {
+        // go back to main menu
+        printf("Going back...\n");
+        printf("%d\n", *ptr_isValidPW);
+    }
+    // if incorrect password
+    else if (strcmp(sPWInput, sADMINPW) != 0)
+    {
+        printf("Incorrect Password. Try again.\n");
+        printf("[1] Go back to Main Menu\n\n");
+        printf("%d\n", *ptr_isValidPW);
+        // re-attempt to ask password
+        askPassword(ptr_isValidPW);
     }
 }
 
@@ -418,11 +440,12 @@ int main()
     while (bQuit == 0);
     
      // USED FOR DEBUGGING ONLY (prints out records)
-     
-    for (int i = 0; i < 5; i++)
-    {
-        printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[i].sTopic, Records[i].nQNum, Records[i].question, Records[i].choice1, Records[i].choice2, Records[i].choice3, Records[i].answer);
-    }
+     /*
+      for (int i = 0; i < 5; i++)
+      {
+          printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[i].sTopic, Records[i].nQNum, Records[i].question, Records[i].choice1, Records[i].choice2, Records[i].choice3, Records[i].answer);
+      }
+      */
     
     return 0;
 }
