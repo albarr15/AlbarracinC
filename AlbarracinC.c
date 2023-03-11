@@ -8,19 +8,6 @@
 #define SIZE2 30
 #define SIZEE 50
 
-// function declarations
-void displayMenu();
-void displaymanageData();
-void inputWspaces(char *s, int LEN);
-void addRecord();
-void editRecord();
-void deleteRecord();
-void exportData();
-void askPassword(int * ptr_isValidPW);
-void playQuiz();
-void viewScores();
-void Play();
-
 struct Data
 {
     char sTopic[20];
@@ -31,6 +18,20 @@ struct Data
     char sChoice3[SIZE2];
     char sAnswer[SIZE2];
 };
+
+// function declarations
+void displayMenu();
+void displaymanageData();
+void addRecord();
+void editRecord();
+void deleteRecord();
+void importData(struct Data A[], int * ptr_isValidFile);
+void exportData();
+void askPassword(int * ptr_isValidPW);
+void playQuiz();
+void viewScores();
+void Play();
+
 
 
 /*
@@ -74,28 +75,6 @@ displaymanageData()
     printf("[6] Go back to MAIN MENU\n");
 }
 
-void inputWspaces(char *s, int LEN)
-{
-    int i = 0;
-    char temp;
-    char ch;
-    
-    // store dangling newline from previous input
-    scanf("%c", &temp);
-    
-    do
-    {
-        scanf("%c", &ch);
-        
-        if (ch != '\n')
-        {
-            s[i] = ch;
-            i++;
-            s[i] = '\0';
-        }
-    } while (i < LEN && ch != '\n');
-}
-
 /*
  askPassword requires the admin to user the correct admin password as well as masks the password with asterisks while it is being typed for additional security
  @param isValidPW is an integer variable where the validity of the password input is stored
@@ -130,7 +109,6 @@ void askPassword(int * ptr_isValidPW)
     
     // use only when editing in MacOS
     scanf("%s", sPWInput);
-    printf("%s\n", sPWInput);
     
     // if password is correct
     if (strcmp(sPWInput, sADMINPW) == 0)
