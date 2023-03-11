@@ -3,20 +3,20 @@
 #include <string.h>
 // #include <conio.h>
 
-#define ENTER 13
-#define SIZE1 150
-#define SIZE2 30
-#define SIZEE 50
+#define TPC_SIZE 20
+#define Q_SIZE 150
+#define CA_SIZE 30
+#define REC_SIZE 50
 
 struct Data
 {
-    char sTopic[20];
+    char sTopic[TPC_SIZE];
     int nQNum;
-    char sQuestion[SIZE1];
-    char sChoice1[SIZE2];
-    char sChoice2[SIZE2];
-    char sChoice3[SIZE2];
-    char sAnswer[SIZE2];
+    char sQuestion[Q_SIZE];
+    char sChoice1[CA_SIZE];
+    char sChoice2[CA_SIZE];
+    char sChoice3[CA_SIZE];
+    char sAnswer[CA_SIZE];
 };
 
 // function declarations
@@ -158,13 +158,13 @@ void importData(struct Data A[], int * ptr_isValidFile)
     char sFilename[30];
     
     // declare temporary variables for scanned records from text file
-    char sfTopic[20];
+    char sfTopic[TPC_SIZE];
     int nfQNum;
-    char sfQuestion[SIZE1];
-    char sfChoice1[SIZE2];
-    char sfChoice2[SIZE2];
-    char sfChoice3[SIZE2];
-    char sfAnswer[SIZE2];
+    char sfQuestion[Q_SIZE];
+    char sfChoice1[CA_SIZE];
+    char sfChoice2[CA_SIZE];
+    char sfChoice3[CA_SIZE];
+    char sfAnswer[CA_SIZE];
     
     int n = 0;
     int i = 0;
@@ -193,10 +193,10 @@ void importData(struct Data A[], int * ptr_isValidFile)
         {
             // get records
             fscanf(fp, "%d\n", &nfQNum);
-            fgets(sfQuestion, SIZE1, fp);
-            fgets(sfChoice1, SIZE2, fp);
-            fgets(sfChoice2, SIZE2, fp);
-            fgets(sfChoice3, SIZE2, fp);
+            fgets(sfQuestion, Q_SIZE, fp);
+            fgets(sfChoice1, CA_SIZE, fp);
+            fgets(sfChoice2, CA_SIZE, fp);
+            fgets(sfChoice3, CA_SIZE, fp);
             fscanf(fp, "%s\n", sfAnswer);
             
             // remove newline characters copied by fgets
@@ -351,7 +351,7 @@ int main()
 {
     int nInput;
     bool bQuit = 0;
-    struct Data Records[SIZEE];
+    struct Data Records[REC_SIZE];
     
     do
     {
