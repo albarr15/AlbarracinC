@@ -12,9 +12,9 @@
 void displayMenu();
 void displaymanageData();
 void inputWspaces(char *s, int LEN);
+void addRecords();
 void editRecords();
 void deleteRecords();
-void importData();
 void exportData();
 void askPassword(int * ptr_isValidPW);
 void playQuiz();
@@ -37,17 +37,19 @@ struct Data
  NOTES TO SELF:
  - In order to implement password masking, include conio.h and uncomment code in askPassword function
  - Add function descriptions when finished
- - fix iterations in addRecords
  - apply fopen() and fclose() functions to read and write from txt file
+ - change applicable variables to bool data type if applicable for better readability
+ - maintain consistency in formats of variable names for better readability
+ - restructure functions
  */
 
 
 
 /* displayMenu shows the Graphic User Interface for the menu of the General Knowledge Quiz Game
-    @param <none>
-    @return <none>
-    Pre-condition: User has opened the program
-*/
+ @param <none>
+ @return <none>
+ Pre-condition: User has opened the program
+ */
 void
 displayMenu()
 {
@@ -58,10 +60,10 @@ displayMenu()
 }
 
 /* displaymanageData shows the Graphic User Interface for the options in the Manage Data section of the program
-    @param <none>
-    @return <none>
-    Pre-condition: User has selected Manage Data from the Main Menu
-*/
+ @param <none>
+ @return <none>
+ Pre-condition: User has selected Manage Data from the Main Menu
+ */
 void
 displaymanageData()
 {
@@ -74,96 +76,100 @@ displaymanageData()
 }
 
 
-void addRecords(struct Data * A[])
+void addRecords()
 {
-    char sQuestion[SIZE1];
-    char sAnswer[SIZE2];
-    int i = 0;
-    int isRecorded = 0;
-    int index = 0;
-    int bFOUND = 0;
-    
     printf("Adding a record...\n");
+}
+
+void importData(struct Data A[], int * ptr_isValidFile)
+{
+    // initialize file pointer variable
+    FILE * fp;
     
-    printf("Enter a question: ");
-    inputWspaces(sQuestion, SIZE1);
-    printf("Enter the answer: ");
-    scanf("%s", sAnswer);
+    // declare array for filename
+    char sFilename[30];
     
-    // find index of last Q&A in the array
-    for (int j = 0; (j < (SIZEE - 1)); j++)
+    // declare temporary variables for scanned records from text file
+    char sfTopic[20];
+    int nfQNum;
+    char sfQuestion[SIZE1];
+    char sfChoice1[SIZE2];
+    char sfChoice2[SIZE2];
+    char sfChoice3[SIZE2];
+    char sfAnswer[SIZE2];
+    
+    int n = 0;
+    int i = 0;
+    int nStringLen;
+    
+    printf("Input the filename: ");
+    scanf("%s", sFilename);
+    
+    if (strcmp(sFilename, "1") == 0)
     {
-        if (!bFOUND)
-        {
-            if ((strcmp(A[j]->sTopic, "\0")) == 0)
-            {
-                bFOUND = 1;
-                index = j;
-            }
-        }
+        printf("Going back to Manage Data Menu ...\n");
+        n = 1;
+        *ptr_isValidFile = n;
     }
-    
-    printf("Index of last q&a found: %d\n", index);
-    
-    /*
-    // check if q&a are already in records
-    for (int i = 0; ((i < (SIZEE - 1)) || (!isRecorded)); i++)
+    else if ((fp = fopen(sFilename, "r")) == NULL)
     {
-        if ((strcmp(sQuestion, A[i]->question) == 0) && (strcmp(sAnswer, A[i]->answer)))
+        fprintf(stderr, "ERROR: %s does not exist.\n", sFilename);
+        printf("[1] Go back to Manage Data Menu\n\n");
+        importData(A, ptr_isValidFile);
+    }
+    else
+    {
+        printf("Importing data from file ...\n");
+        
+        while (fscanf(fp, "%s\n", sfTopic) == 1)
         {
-            printf("Q & A are already listed in the records.\n");
-            printf("%s, %d, %s, %s, %s, %s, %s\n\n", A[i]->sTopic, A[i]->nQNum, A[i]->question, A[i]->choice1, A[i]->choice2, A[i]->choice3, A[i]->answer);
+            // get records
+            fscanf(fp, "%d\n", &nfQNum);
+            fgets(sfQuestion, SIZE1, fp);
+            fgets(sfChoice1, SIZE2, fp);
+            fgets(sfChoice2, SIZE2, fp);
+            fgets(sfChoice3, SIZE2, fp);
+            fscanf(fp, "%s\n", sfAnswer);
             
-            isRecorded = 1;
-            if (strcpy(A[i + 1]->question, "\0"))
-            {
-                break;
-            }
+            // remove newline characters copied by fgets
+            nStringLen = strlen(sfQuestion);
+            sfQuestion[nStringLen - 1] = '\0';
+            nStringLen = strlen(sfChoice1);
+            sfChoice1[nStringLen - 1] = '\0';
+            nStringLen = strlen(sfChoice2);
+            sfChoice2[nStringLen - 1] = '\0';
+            nStringLen = strlen(sfChoice3);
+            sfChoice3[nStringLen - 1] = '\0';
+            
+            // store scanned results from text file to program's array
+            strcpy(A[i].sTopic, sfTopic);
+            A[i].nQNum = nfQNum;
+            strcpy(A[i].question, sfQuestion);
+            strcpy(A[i].choice1, sfChoice1);
+            strcpy(A[i].choice2, sfChoice2);
+            strcpy(A[i].choice3, sfChoice3);
+            strcpy(A[i].answer, sfAnswer);
+            
+            // iterate
+            i++;
+            
+            // FOR DEBUGGING ONLY
+            /*
+             printf("%s\n%d\n%s\n%s\n%s\n%s\n%s\n\n", A[i].sTopic, A[i].nQNum, A[i].question, A[i].choice1, A[i].choice2, A[i].choice3, A[i].answer);
+             */
         }
-    }*/
-    
-    if (!isRecorded)
-    {
-        // assign input Q&A to array struct
-        strcpy(A[i]->question, sQuestion);
-        strcpy(A[i]->answer, sAnswer);
-        
-        printf("Question: %s\n", sQuestion);
-        printf("Answer: %s\n\n", sAnswer);
-        
-        printf("Please enter the remaining input needed: \n");
-        printf("Topic: ");
-        scanf("%s", A[i]->sTopic);
-        printf("Choice 1: ");
-        scanf("%s", A[i]->choice1);
-        printf("Choice 2: ");
-        scanf("%s", A[i]->choice2);
-        printf("Choice 3: ");
-        scanf("%s", A[i]->choice3);
-        
-        // count how many questions are already assigned in the Topic
-        int nFlag = 0;
-        for (int k = 0; k < 1; k++)
-        {
-            if (strcmp(A[i]->sTopic, A[k]->sTopic) == 0)
-            {
-                nFlag++;
-            }
-        }
-        // assign number of times the topic is found in the records to the question number
-        A[i]->nQNum = nFlag;
     }
 }
-    
 
 /* manageData allows the admin to add, edit, delete records, as well as import and export data after inputting the correct admin password
-    @param <none>
-    @return <none>
-    Pre-condition: User has selected Manage Data from the Main Menu and has not yet opted to go back to Main Menu
-*/
+ @param <none>
+ @return <none>
+ Pre-condition: User has selected Manage Data from the Main Menu and has not yet opted to go back to Main Menu
+ */
 void manageData(struct Data A[])
 {
-	int isValidPW = 0;
+    int isValidPW = 0;
+    int isValidFile = 0;
     int nInput;
     int bQuit = 0;
     
@@ -183,7 +189,7 @@ void manageData(struct Data A[])
             switch (nInput)
             {
                 case 1:
-                    addRecords(&A);
+                    addRecords();
                     break;
                     
                 case 2:
@@ -195,7 +201,7 @@ void manageData(struct Data A[])
                     break;
                     
                 case 4:
-                    importData();
+                    importData(A, &isValidFile);
                     break;
                     
                 case 5:
@@ -217,12 +223,12 @@ void manageData(struct Data A[])
 
 
 /*
-    askPassword requires the admin to user the correct admin password as well as masks the password with asterisks while it is being typed for additional security
-    @param isValidPW is an integer variable where the validity of the password input is stored
-        *ptr_isValidPW is a pointer to the variable 'isValidPW' in order for the manageData to check the validity of the password
-    @return <none>
-    Pre-condition: User has selected Manage Data from the menu, user cannot backspace or add spaces when entering the password
-*/
+ askPassword requires the admin to user the correct admin password as well as masks the password with asterisks while it is being typed for additional security
+ @param isValidPW is an integer variable where the validity of the password input is stored
+ *ptr_isValidPW is a pointer to the variable 'isValidPW' in order for the manageData to check the validity of the password
+ @return <none>
+ Pre-condition: User has selected Manage Data from the menu, user cannot backspace or add spaces when entering the password
+ */
 void askPassword(int * ptr_isValidPW)
 {
     const char sADMINPW[] = "Genquiz411";
@@ -234,18 +240,18 @@ void askPassword(int * ptr_isValidPW)
     printf("Please input admin password: ");
     
     /*
-    // Mask password with asterisks
-    // if character entered is NOT the enter key
-    while ((ch = _getch()) != 13)
-    {
-        sPWInput[i] = ch;
-        printf("*");
-        i++;
-    }
-    
-    // add null byte to specify end of string
-    sPWInput[i] = '\0';
-    printf("\n");
+     // Mask password with asterisks
+     // if character entered is NOT the enter key
+     while ((ch = _getch()) != 13)
+     {
+     sPWInput[i] = ch;
+     printf("*");
+     i++;
+     }
+     
+     // add null byte to specify end of string
+     sPWInput[i] = '\0';
+     printf("\n");
      */
     
     // use only when editing in MacOS
@@ -259,30 +265,25 @@ void askPassword(int * ptr_isValidPW)
         // set isValidPW to 1
         n = 1;
         *ptr_isValidPW = n;
-        
-        printf("%d\n", *ptr_isValidPW);
     }
     // if input is 1,
     else if (strcmp(sPWInput, "1") == 0)
     {
         // go back to main menu
         printf("Going back...\n");
-        printf("%d\n", *ptr_isValidPW);
     }
     // if incorrect password
     else if (strcmp(sPWInput, sADMINPW) != 0)
     {
         printf("Incorrect Password. Try again.\n");
         printf("[1] Go back to Main Menu\n\n");
-        printf("%d\n", *ptr_isValidPW);
         // re-attempt to ask password
         askPassword(ptr_isValidPW);
     }
 }
 
 
-void
-inputWspaces(char *s, int LEN)
+void inputWspaces(char *s, int LEN)
 {
     int i = 0;
     char temp;
@@ -315,35 +316,6 @@ void deleteRecords()
     printf("Deleting a record...\n");
 }
 
-void importData(FILE * ptr_file)
-{
-    /*
-     INITIAL CODE
-     
-     void readRecords(struct Data * A)
-     {
-         char temp;
-         char temp1;
-         int i = 0;
-         
-         for (int i = 0; (i < SIZEE); i++)
-         {
-                 scanf("%s", A[i].sTopic);
-                 scanf("%d", &A[i].nQNum);
-                 inputWspaces(A[i].question, SIZE1);
-                 scanf("%s", A[i].choice1);
-                 scanf("%s", A[i].choice2);
-                 scanf("%s", A[i].choice3);
-                 scanf("%s", A[i].answer);
-             
-                 // store newline
-                 scanf("%ch", &temp);
-         }
-     }
-     */
-    
-    printf("Importing data...\n");
-}
 
 void exportData(FILE * ptr_file)
 {
@@ -351,10 +323,10 @@ void exportData(FILE * ptr_file)
 }
 
 /* Play allows the user to play the quiz, view the scores, as well as go back to the Main Menu
-    @param <none>
-    @return <none>
-    Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
-*/
+ @param <none>
+ @return <none>
+ Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
+ */
 void Play()
 {
     int bQuit = 0;
@@ -409,28 +381,29 @@ int main()
     bool bQuit = 0;
     struct Data Records[SIZEE];
     // FILE * ptr_file = NULL;
+    strcpy(Records[3].question, "are u hungry?");
     
     do
     {
-    // display main menu GUI
-    displayMenu();
-    scanf("%d", &nInput);
+        // display main menu GUI
+        displayMenu();
+        scanf("%d", &nInput);
         
         switch (nInput)
         {
             case 1:
                 manageData(&(Records[0]));
                 break;
-                    
+                
             case 2:
                 Play();
                 break;
-                    
+                
             case 3:
                 printf("Exiting ...\n");
                 bQuit = 1;
                 break;
-                    
+                
             default:
                 printf("Please select one of the options provided.\n");
                 break;
@@ -439,13 +412,12 @@ int main()
     }
     while (bQuit == 0);
     
-     // USED FOR DEBUGGING ONLY (prints out records)
-     /*
-      for (int i = 0; i < 5; i++)
-      {
-          printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[i].sTopic, Records[i].nQNum, Records[i].question, Records[i].choice1, Records[i].choice2, Records[i].choice3, Records[i].answer);
-      }
-      */
+    //USED FOR DEBUGGING ONLY (prints out records)
+    
+    for (int i = 0; i < 5; i++)
+    {
+        printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[i].sTopic, Records[i].nQNum, Records[i].question, Records[i].choice1, Records[i].choice2, Records[i].choice3, Records[i].answer);
+    }
     
     return 0;
 }
