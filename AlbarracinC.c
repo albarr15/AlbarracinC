@@ -12,9 +12,9 @@
 void displayMenu();
 void displaymanageData();
 void inputWspaces(char *s, int LEN);
-void addRecords();
-void editRecords();
-void deleteRecords();
+void addRecord();
+void editRecord();
+void deleteRecord();
 void exportData();
 void askPassword(int * ptr_isValidPW);
 void playQuiz();
@@ -156,17 +156,17 @@ void askPassword(int * ptr_isValidPW)
     }
 }
 
-void addRecords()
+void addRecord()
 {
     printf("Adding a record...\n");
 }
 
-void editRecords()
+void editRecord()
 {
     printf("Editing a record...\n");
 }
 
-void deleteRecords()
+void deleteRecord()
 {
     printf("Deleting a record...\n");
 }
@@ -284,15 +284,15 @@ void manageData(struct Data A[])
             switch (nInput)
             {
                 case 1:
-                    addRecords();
+                    addRecord();
                     break;
                     
                 case 2:
-                    editRecords();
+                    editRecord();
                     break;
                     
                 case 3:
-                    deleteRecords();
+                    deleteRecord();
                     break;
                     
                 case 4:
