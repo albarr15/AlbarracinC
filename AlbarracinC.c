@@ -22,16 +22,15 @@ struct Data
 // function declarations
 void displayMenu();
 void displaymanageData();
-void addRecord();
+int * addRecord(struct Data * A, int * s);
 void editRecord();
 void deleteRecord();
-void importData(struct Data A[], int * ptr_isValidFile);
+int * importData(struct Data A[], int * ptr_isValidFile, int * s);
 void exportData();
 void askPassword(int * ptr_isValidPW);
 void playQuiz();
 void viewScores();
 void Play();
-
 
 
 /*
@@ -134,9 +133,78 @@ void askPassword(int * ptr_isValidPW)
     }
 }
 
-void addRecord()
+int * addRecord(struct Data * A, int * s)
 {
-    printf("Adding a record...\n");
+    char inputQuestion[Q_SIZE];
+    char inputAnswer[CA_SIZE];
+    int bRecorded = 0;
+    int nExistingTopic = 1;
+    
+    printf("Adding a record ...\n");
+    
+    // define last_index to determine where the added record will be placed in the struct array
+    int last_index = 0;
+    if (*s != 0)
+    {
+        last_index = *s - 1;
+    }
+    
+    // ask user for the question and answer
+    printf("\nEnter question: ");
+    fgets(inputQuestion, Q_SIZE, stdin);
+    printf("\nEnter answer: ");
+    fgets(inputAnswer, CA_SIZE, stdin);
+    
+    // check if inputted Q&A are already listed in the records
+    for (int i = 0; (i < *s) || (!bRecorded); i++)
+    {
+        if ((strcmp(A[i].sQuestion, inputQuestion) == 0) || (strcmp(A[i].sAnswer, inputAnswer) == 0))
+        {
+            printf("Record already listed.\n");
+            printf("%s, %d, %s, %s, %s, %s, %s\n\n", A[i].sTopic, A[i].nQNum, A[i].sQuestion, A[i].sChoice1, A[i].sChoice2, A[i].sChoice3, A[i].sAnswer);
+            
+            bRecorded = 1;
+        }
+    }
+    
+    // if not yet recorded,
+    if (!bRecorded)
+    {
+        printf("%s; %s", inputQuestion, inputAnswer);
+        
+        // ask user for input on the record's topic, choice 1, choice 2, and choice 3
+        printf("Please input the remaining info needed for the record: \n");
+        printf("Topic: ");
+        scanf("%s", A[last_index].sTopic);
+        printf("Choice 1: ");
+        fgets(A[last_index].sChoice1, CA_SIZE, stdin);
+        printf("Choice 2: ");
+        fgets(A[last_index].sChoice2, CA_SIZE, stdin);
+        printf("Choice 3: ");
+        fgets(A[last_index].sChoice3, CA_SIZE, stdin);
+        
+        // check if the inputted topic is already existing (the number of existing questions with the same topic will be used to define nQnum of the added record)
+        for (int j = 0; (j < *s); j++)
+        {
+            if (j != last_index)
+            {
+                if (strcmp(A[last_index].sTopic, A[j].sTopic) == 0)
+                {
+                    nExistingTopic = nExistingTopic + 1;
+                }
+            }
+        }
+        
+        // assign nQnum
+        A[last_index].nQNum = nExistingTopic;
+    }
+    
+    printf("Added successfully: ");
+    printf("%s, %d, %s, %s, %s, %s, %s\n\n", A[last_index].sTopic, A[last_index].nQNum, A[last_index].sQuestion, A[last_index].sChoice1, A[last_index].sChoice2, A[last_index].sChoice3, A[last_index].sAnswer);
+    
+    // add 1 to current struct array size
+    *s = *s +1;
+    return s;
 }
 
 void editRecord()
@@ -149,7 +217,7 @@ void deleteRecord()
     printf("Deleting a record...\n");
 }
 
-void importData(struct Data A[], int * ptr_isValidFile)
+int * importData(struct Data A[], int * ptr_isValidFile, int * s)
 {
     // initialize file pointer variable
     FILE * fp;
@@ -183,7 +251,7 @@ void importData(struct Data A[], int * ptr_isValidFile)
     {
         fprintf(stderr, "ERROR: %s does not exist.\n", sFilename);
         printf("[1] Go back to Manage Data Menu\n\n");
-        importData(A, ptr_isValidFile);
+        importData(A, ptr_isValidFile, s);
     }
     else
     {
@@ -218,6 +286,7 @@ void importData(struct Data A[], int * ptr_isValidFile)
             strcpy(A[i].sChoice3, sfChoice3);
             strcpy(A[i].sAnswer, sfAnswer);
             
+            *s = *s + 1;
             // iterate
             i++;
             
@@ -227,6 +296,7 @@ void importData(struct Data A[], int * ptr_isValidFile)
              */
         }
     }
+    return s;
 }
 
 void exportData()
@@ -239,7 +309,7 @@ void exportData()
  @return <none>
  Pre-condition: User has selected Manage Data from the Main Menu and has not yet opted to go back to Main Menu
  */
-void manageData(struct Data A[])
+void manageData(struct Data A[], int * s)
 {
     int isValidPW = 0;
     int isValidFile = 0;
@@ -262,7 +332,7 @@ void manageData(struct Data A[])
             switch (nInput)
             {
                 case 1:
-                    addRecord();
+                    *s = *addRecord(A, s);
                     break;
                     
                 case 2:
@@ -274,7 +344,7 @@ void manageData(struct Data A[])
                     break;
                     
                 case 4:
-                    importData(A, &isValidFile);
+                    *s = *importData(A, &isValidFile, s);
                     break;
                     
                 case 5:
@@ -352,6 +422,7 @@ int main()
     int nInput;
     bool bQuit = 0;
     struct Data Records[REC_SIZE];
+    int size = 0;
     
     do
     {
@@ -362,7 +433,7 @@ int main()
         switch (nInput)
         {
             case 1:
-                manageData(&(Records[0]));
+                manageData(&(Records[0]), &size);
                 break;
                 
             case 2:
@@ -384,7 +455,7 @@ int main()
     
     //USED FOR DEBUGGING ONLY (prints out records)
     
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < size; i++)
     {
         printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[i].sTopic, Records[i].nQNum, Records[i].sQuestion, Records[i].sChoice1, Records[i].sChoice2, Records[i].sChoice3, Records[i].sAnswer);
     }
