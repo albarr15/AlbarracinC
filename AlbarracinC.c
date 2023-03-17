@@ -41,6 +41,8 @@ void Play();
  - change applicable variables to bool data type if applicable for better readability
  - maintain consistency in formats of variable names for better readability
  - restructure functions
+ 
+ ! - make user-defined function for the storing sentences with spaces (scanf temp, fgets, remove newline char copied)
  */
 
 
@@ -139,6 +141,8 @@ int * addRecord(struct Data * A, int * s)
     char inputAnswer[CA_SIZE];
     int bRecorded = 0;
     int nExistingTopic = 1;
+    int nStringLen;
+    char temp;
     
     printf("Adding a record ...\n");
     
@@ -150,13 +154,17 @@ int * addRecord(struct Data * A, int * s)
     }
     
     // ask user for the question and answer
-    printf("\nEnter question: ");
-    fgets(inputQuestion, Q_SIZE, stdin);
-    printf("\nEnter answer: ");
-    fgets(inputAnswer, CA_SIZE, stdin);
+    printf("Enter question: ");
+    scanf("%c", &temp);
+    fgets(inputQuestion, CA_SIZE, stdin);
+    nStringLen = strlen(inputQuestion);
+    inputQuestion[nStringLen - 1] = '\0';
+    
+    printf("Enter answer: ");
+    scanf("%s", inputAnswer);
     
     // check if inputted Q&A are already listed in the records
-    for (int i = 0; (i < *s) || (!bRecorded); i++)
+    for (int i = 0; (i < *s) && (!bRecorded); i++)
     {
         if ((strcmp(A[i].sQuestion, inputQuestion) == 0) || (strcmp(A[i].sAnswer, inputAnswer) == 0))
         {
@@ -195,15 +203,16 @@ int * addRecord(struct Data * A, int * s)
             }
         }
         
-        // assign nQnum
-        A[last_index].nQNum = nExistingTopic;
     }
+    
+    // assign nQnum
+    A[last_index].nQNum = nExistingTopic;
     
     printf("Added successfully: ");
     printf("%s, %d, %s, %s, %s, %s, %s\n\n", A[last_index].sTopic, A[last_index].nQNum, A[last_index].sQuestion, A[last_index].sChoice1, A[last_index].sChoice2, A[last_index].sChoice3, A[last_index].sAnswer);
     
     // add 1 to current struct array size
-    *s = *s +1;
+    *s = *s + 1;
     return s;
 }
 
@@ -238,21 +247,26 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
     int i = 0;
     int nStringLen;
     
+    // ask user for filename
     printf("Input the filename: ");
     scanf("%s", sFilename);
     
+    // if user inputted 1
     if (strcmp(sFilename, "1") == 0)
     {
         printf("Going back to Manage Data Menu ...\n");
         n = 1;
         *ptr_isValidFile = n;
     }
+    
+    // if filename does not exist
     else if ((fp = fopen(sFilename, "r")) == NULL)
     {
         fprintf(stderr, "ERROR: %s does not exist.\n", sFilename);
         printf("[1] Go back to Manage Data Menu\n\n");
         importData(A, ptr_isValidFile, s);
     }
+    // else, push through with importing data
     else
     {
         printf("Importing data from file ...\n");
