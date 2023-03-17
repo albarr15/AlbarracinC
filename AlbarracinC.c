@@ -42,7 +42,7 @@ void Play();
  - maintain consistency in formats of variable names for better readability
  - restructure functions
  
- ! - make user-defined function for the storing sentences with spaces (scanf temp, fgets, remove newline char copied)
+ ! - better to make user-defined function for the storing sentences with spaces (scanf temp, fgets, remove newline char copied)
  */
 
 
@@ -147,11 +147,9 @@ int * addRecord(struct Data * A, int * s)
     printf("Adding a record ...\n");
     
     // define last_index to determine where the added record will be placed in the struct array
-    int last_index = 0;
-    if (*s != 0)
-    {
-        last_index = *s - 1;
-    }
+    int last_index = (*s - 1);
+    
+    printf("Last index: %d\n", last_index);
     
     // ask user for the question and answer
     printf("Enter question: ");
@@ -161,12 +159,14 @@ int * addRecord(struct Data * A, int * s)
     inputQuestion[nStringLen - 1] = '\0';
     
     printf("Enter answer: ");
-    scanf("%s", inputAnswer);
+    fgets(inputAnswer, CA_SIZE, stdin);
+    nStringLen = strlen(inputAnswer);
+    inputAnswer[nStringLen - 1] = '\0';
     
     // check if inputted Q&A are already listed in the records
     for (int i = 0; (i < *s) && (!bRecorded); i++)
     {
-        if ((strcmp(A[i].sQuestion, inputQuestion) == 0) || (strcmp(A[i].sAnswer, inputAnswer) == 0))
+        if ((strcmp(A[i].sQuestion, inputQuestion) == 0) && (strcmp(A[i].sAnswer, inputAnswer) == 0))
         {
             printf("Record already listed.\n");
             printf("%s, %d, %s, %s, %s, %s, %s\n\n", A[i].sTopic, A[i].nQNum, A[i].sQuestion, A[i].sChoice1, A[i].sChoice2, A[i].sChoice3, A[i].sAnswer);
@@ -178,41 +178,51 @@ int * addRecord(struct Data * A, int * s)
     // if not yet recorded,
     if (!bRecorded)
     {
-        printf("%s; %s", inputQuestion, inputAnswer);
+        // add the inputted Q&A to the records
+        strcpy(A[last_index].sQuestion, inputQuestion);
+        strcpy(A[last_index].sAnswer, inputAnswer);
         
         // ask user for input on the record's topic, choice 1, choice 2, and choice 3
         printf("Please input the remaining info needed for the record: \n");
         printf("Topic: ");
         scanf("%s", A[last_index].sTopic);
+        scanf("%c", &temp);
+        
         printf("Choice 1: ");
         fgets(A[last_index].sChoice1, CA_SIZE, stdin);
+        nStringLen = strlen(A[last_index].sChoice1);
+        A[last_index].sChoice1[nStringLen - 1] = '\0';
         printf("Choice 2: ");
         fgets(A[last_index].sChoice2, CA_SIZE, stdin);
+        nStringLen = strlen(A[last_index].sChoice2);
+        A[last_index].sChoice2[nStringLen - 1] = '\0';
         printf("Choice 3: ");
         fgets(A[last_index].sChoice3, CA_SIZE, stdin);
+        nStringLen = strlen(A[last_index].sChoice3);
+        A[last_index].sChoice3[nStringLen - 1] = '\0';
         
         // check if the inputted topic is already existing (the number of existing questions with the same topic will be used to define nQnum of the added record)
         for (int j = 0; (j < *s); j++)
         {
+            // do not include j is at the last_index
             if (j != last_index)
             {
                 if (strcmp(A[last_index].sTopic, A[j].sTopic) == 0)
                 {
-                    nExistingTopic = nExistingTopic + 1;
+                    nExistingTopic++;
                 }
             }
         }
         
+        // assign nQNum
+        A[last_index].nQNum = nExistingTopic;
+        
+        printf("Added successfully: ");
+        printf("%s, %d, %s, %s, %s, %s, %s\n\n", A[last_index].sTopic, A[last_index].nQNum, A[last_index].sQuestion, A[last_index].sChoice1, A[last_index].sChoice2, A[last_index].sChoice3, A[last_index].sAnswer);
     }
     
-    // assign nQnum
-    A[last_index].nQNum = nExistingTopic;
-    
-    printf("Added successfully: ");
-    printf("%s, %d, %s, %s, %s, %s, %s\n\n", A[last_index].sTopic, A[last_index].nQNum, A[last_index].sQuestion, A[last_index].sChoice1, A[last_index].sChoice2, A[last_index].sChoice3, A[last_index].sAnswer);
-    
     // add 1 to current struct array size
-    *s = *s + 1;
+    *s = (*s + 1);
     return s;
 }
 
@@ -244,7 +254,9 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
     char sfAnswer[CA_SIZE];
     
     int n = 0;
-    int i = 0;
+    
+    int i = (*s - 1);
+    
     int nStringLen;
     
     // ask user for filename
@@ -300,7 +312,7 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
             strcpy(A[i].sChoice3, sfChoice3);
             strcpy(A[i].sAnswer, sfAnswer);
             
-            *s = *s + 1;
+            *s = (*s + 1);
             // iterate
             i++;
             
@@ -436,7 +448,7 @@ int main()
     int nInput;
     bool bQuit = 0;
     struct Data Records[REC_SIZE];
-    int size = 0;
+    int size = 1;
     
     do
     {
