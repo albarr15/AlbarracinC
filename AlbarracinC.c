@@ -149,8 +149,6 @@ int * addRecord(struct Data * A, int * s)
     // define last_index to determine where the added record will be placed in the struct array
     int last_index = (*s - 1);
     
-    printf("Last index: %d\n", last_index);
-    
     // ask user for the question and answer
     printf("Enter question: ");
     scanf("%c", &temp);
@@ -159,9 +157,7 @@ int * addRecord(struct Data * A, int * s)
     inputQuestion[nStringLen - 1] = '\0';
     
     printf("Enter answer: ");
-    fgets(inputAnswer, CA_SIZE, stdin);
-    nStringLen = strlen(inputAnswer);
-    inputAnswer[nStringLen - 1] = '\0';
+    scanf("%s", inputAnswer);
     
     // check if inputted Q&A are already listed in the records
     for (int i = 0; (i < *s) && (!bRecorded); i++)
@@ -169,7 +165,15 @@ int * addRecord(struct Data * A, int * s)
         if ((strcmp(A[i].sQuestion, inputQuestion) == 0) && (strcmp(A[i].sAnswer, inputAnswer) == 0))
         {
             printf("Record already listed.\n");
-            printf("%s, %d, %s, %s, %s, %s, %s\n\n", A[i].sTopic, A[i].nQNum, A[i].sQuestion, A[i].sChoice1, A[i].sChoice2, A[i].sChoice3, A[i].sAnswer);
+            
+            // print record
+            printf("Topic: %s\n", A[i].sTopic);
+            printf("Question #: %d\n", A[i].nQNum);
+            printf("Question: %s\n", A[i].sQuestion);
+            printf("Choice 1: %s\n", A[i].sChoice1);
+            printf("Choice 2: %s\n", A[i].sChoice2);
+            printf("Choice 3: %s\n", A[i].sChoice3);
+            printf("Answer: %s\n", A[i].sAnswer);
             
             bRecorded = 1;
         }
@@ -186,20 +190,13 @@ int * addRecord(struct Data * A, int * s)
         printf("Please input the remaining info needed for the record: \n");
         printf("Topic: ");
         scanf("%s", A[last_index].sTopic);
-        scanf("%c", &temp);
         
         printf("Choice 1: ");
-        fgets(A[last_index].sChoice1, CA_SIZE, stdin);
-        nStringLen = strlen(A[last_index].sChoice1);
-        A[last_index].sChoice1[nStringLen - 1] = '\0';
+        scanf("%s", A[last_index].sChoice1);
         printf("Choice 2: ");
-        fgets(A[last_index].sChoice2, CA_SIZE, stdin);
-        nStringLen = strlen(A[last_index].sChoice2);
-        A[last_index].sChoice2[nStringLen - 1] = '\0';
+        scanf("%s", A[last_index].sChoice2);
         printf("Choice 3: ");
-        fgets(A[last_index].sChoice3, CA_SIZE, stdin);
-        nStringLen = strlen(A[last_index].sChoice3);
-        A[last_index].sChoice3[nStringLen - 1] = '\0';
+        scanf("%s", A[last_index].sChoice3);
         
         // check if the inputted topic is already existing (the number of existing questions with the same topic will be used to define nQnum of the added record)
         for (int j = 0; (j < *s); j++)
@@ -252,6 +249,7 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
     char sfChoice2[CA_SIZE];
     char sfChoice3[CA_SIZE];
     char sfAnswer[CA_SIZE];
+    char temp;
     
     int n = 0;
     
@@ -283,25 +281,30 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
     {
         printf("Importing data from file ...\n");
         
-        while (fscanf(fp, "%s\n", sfTopic) == 1)
+        while ((fscanf(fp, "%s\n", sfTopic) == 1) && (!(strcmp(sfTopic, "\n") == 0)))
         {
             // get records
             fscanf(fp, "%d\n", &nfQNum);
-            fgets(sfQuestion, Q_SIZE, fp);
-            fgets(sfChoice1, CA_SIZE, fp);
-            fgets(sfChoice2, CA_SIZE, fp);
-            fgets(sfChoice3, CA_SIZE, fp);
-            fscanf(fp, "%s\n", sfAnswer);
             
-            // remove newline characters copied by fgets
+            // add 1 to the scanned question number everytime there is a record with the same topic in the current record lsit
+            for (int i = 0; (i < *s); i++)
+            {
+                if ((strcmp(A[i].sTopic, sfTopic) == 0)
+                {
+                    nfQNum++;
+                }
+            }
+            
+            // get the question, choice1, choice2, choice3, and the answer
+            fgets(sfQuestion, Q_SIZE, fp);
+            // remove newline copied by fgets
             nStringLen = strlen(sfQuestion);
             sfQuestion[nStringLen - 1] = '\0';
-            nStringLen = strlen(sfChoice1);
-            sfChoice1[nStringLen - 1] = '\0';
-            nStringLen = strlen(sfChoice2);
-            sfChoice2[nStringLen - 1] = '\0';
-            nStringLen = strlen(sfChoice3);
-            sfChoice3[nStringLen - 1] = '\0';
+            
+            fscanf(fp, "%s\n", sfChoice1);
+            fscanf(fp, "%s\n", sfChoice2);
+            fscanf(fp, "%s\n", sfChoice3);
+            fscanf(fp, "%s\n", sfAnswer);
             
             // store scanned results from text file to program's array
             strcpy(A[i].sTopic, sfTopic);
@@ -481,7 +484,7 @@ int main()
     
     //USED FOR DEBUGGING ONLY (prints out records)
     
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < (size - 1); i++)
     {
         printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[i].sTopic, Records[i].nQNum, Records[i].sQuestion, Records[i].sChoice1, Records[i].sChoice2, Records[i].sChoice3, Records[i].sAnswer);
     }
