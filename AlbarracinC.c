@@ -135,7 +135,7 @@ void askPassword(int * ptr_isValidPW)
     }
 }
 
-int * addRecord(struct Data * A, int * s)
+int * addRecord(struct Data A[], int * s)
 {
     char inputQuestion[Q_SIZE];
     char inputAnswer[CA_SIZE];
@@ -151,7 +151,7 @@ int * addRecord(struct Data * A, int * s)
     
     // ask user for the question and answer
     printf("Enter question: ");
-    scanf("%c", &temp);
+    scanf("%c", &temp); // store dangling newline
     fgets(inputQuestion, CA_SIZE, stdin);
     nStringLen = strlen(inputQuestion);
     inputQuestion[nStringLen - 1] = '\0';
@@ -235,7 +235,7 @@ void deleteRecord()
 
 int * importData(struct Data A[], int * ptr_isValidFile, int * s)
 {
-    // initialize file pointer variable
+    // declare file pointer variable
     FILE * fp;
     
     // declare array for filename
@@ -249,10 +249,9 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
     char sfChoice2[CA_SIZE];
     char sfChoice3[CA_SIZE];
     char sfAnswer[CA_SIZE];
-    char temp;
     
     int n = 0;
-    
+    int initialS = *s;
     int i = (*s - 1);
     
     int nStringLen;
@@ -287,9 +286,9 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
             fscanf(fp, "%d\n", &nfQNum);
             
             // add 1 to the scanned question number everytime there is a record with the same topic in the current record lsit
-            for (int i = 0; (i < *s); i++)
+            for (int i = 0; (i < initialS); i++)
             {
-                if ((strcmp(A[i].sTopic, sfTopic) == 0)
+                if ((strcmp(A[i].sTopic, sfTopic) == 0))
                 {
                     nfQNum++;
                 }
@@ -301,19 +300,14 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
             nStringLen = strlen(sfQuestion);
             sfQuestion[nStringLen - 1] = '\0';
             
-            fscanf(fp, "%s\n", sfChoice1);
-            fscanf(fp, "%s\n", sfChoice2);
-            fscanf(fp, "%s\n", sfChoice3);
-            fscanf(fp, "%s\n", sfAnswer);
-            
-            // store scanned results from text file to program's array
+            // store data to program's record list
             strcpy(A[i].sTopic, sfTopic);
             A[i].nQNum = nfQNum;
             strcpy(A[i].sQuestion, sfQuestion);
-            strcpy(A[i].sChoice1, sfChoice1);
-            strcpy(A[i].sChoice2, sfChoice2);
-            strcpy(A[i].sChoice3, sfChoice3);
-            strcpy(A[i].sAnswer, sfAnswer);
+            fscanf(fp, "%s\n", A[i].sChoice1);
+            fscanf(fp, "%s\n", A[i].sChoice2);
+            fscanf(fp, "%s\n", A[i].sChoice3);
+            fscanf(fp, "%s\n", A[i].sAnswer);
             
             *s = (*s + 1);
             // iterate
