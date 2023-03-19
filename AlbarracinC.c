@@ -73,6 +73,17 @@ displaymanageData()
     printf("[6] Go back to MAIN MENU\n");
 }
 
+void displayRecord(struct Data A[], int i)
+{
+    printf("Topic: %s\n", A[i].sTopic);
+    printf("Question #: %d\n", A[i].nQNum);
+    printf("Question: %s\n", A[i].sQuestion);
+    printf("Choice 1: %s\n", A[i].sChoice1);
+    printf("Choice 2: %s\n", A[i].sChoice2);
+    printf("Choice 3: %s\n", A[i].sChoice3);
+    printf("Answer: %s\n", A[i].sAnswer);
+}
+
 void getInput(char sentence[], int LEN)
 {
     int i = 0;
@@ -182,13 +193,7 @@ int * addRecord(struct Data A[], int * s)
             printf("Record already listed.\n");
             
             // print record
-            printf("Topic: %s\n", A[i].sTopic);
-            printf("Question #: %d\n", A[i].nQNum);
-            printf("Question: %s\n", A[i].sQuestion);
-            printf("Choice 1: %s\n", A[i].sChoice1);
-            printf("Choice 2: %s\n", A[i].sChoice2);
-            printf("Choice 3: %s\n", A[i].sChoice3);
-            printf("Answer: %s\n", A[i].sAnswer);
+            displayRecord(A, i);
             
             bRecorded = 1;
         }
@@ -229,16 +234,19 @@ int * addRecord(struct Data A[], int * s)
         
         printf("Added successfully: ");
         printf("%s, %d, %s, %s, %s, %s, %s\n\n", A[last_index].sTopic, A[last_index].nQNum, A[last_index].sQuestion, A[last_index].sChoice1, A[last_index].sChoice2, A[last_index].sChoice3, A[last_index].sAnswer);
+        
+        // add 1 to current struct array size
+        *s = (*s + 1);
     }
-    
-    // add 1 to current struct array size
-    *s = (*s + 1);
     return s;
 }
 
-void editRecord()
+
+void editRecord(struct Data A[], int s)
 {
     printf("Editing a record...\n");
+    
+    
 }
 
 void deleteRecord()
@@ -366,7 +374,7 @@ void manageData(struct Data A[], int * s)
                     break;
                     
                 case 2:
-                    editRecord();
+                    editRecord(A, *s);
                     break;
                     
                 case 3:
