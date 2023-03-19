@@ -84,6 +84,33 @@ void displayRecord(struct Data A[], int i)
     printf("Answer: %s\n", A[i].sAnswer);
 }
 
+void displayUniqTopics(struct Data A[], int s)
+{
+    int ctr;
+    int nUnique = 0;
+    
+    for (int i = 0; i < (s - 1); i++)
+    {
+        ctr = 0;
+        for (int j = 0, k = s; j < k + 1; j++)
+        {
+            // Increment counter when not unique
+            if (i != j)
+            {
+                if(strcmp(A[i].sTopic, A[j].sTopic) == 0)
+                {
+                    ctr++;
+                }
+            }
+        }
+        if ((ctr == 0) && (A[i].sTopic[0] != '\0'))
+        {
+            nUnique++;
+            printf("[%d] %s\n",nUnique, A[i].sTopic);
+        }
+    }
+}
+
 void getInput(char sentence[], int LEN)
 {
     int i = 0;
@@ -238,6 +265,10 @@ int * addRecord(struct Data A[], int * s)
         // add 1 to current struct array size
         *s = (*s + 1);
     }
+    
+    // remove last newline character scanned from text file
+    A[(*s - 1)].sTopic[0] = '\0';
+    
     return s;
 }
 
@@ -246,7 +277,7 @@ void editRecord(struct Data A[], int s)
 {
     printf("Editing a record...\n");
     
-    
+    displayUniqTopics(A, s);
 }
 
 void deleteRecord()
@@ -300,8 +331,8 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
             // get records
             fscanf(fp, "%d\n", &nfQNum);
             
-            // add 1 to the scanned question number everytime there is a record with the same topic in the current record lsit
-            for (int i = 0; (i < initialS); i++)
+            // add 1 to the scanned question number everytime there is a record with the same topic in the current record list
+            for (int i = 0; (i < (initialS - 1)); i++)
             {
                 if ((strcmp(A[i].sTopic, sfTopic) == 0))
                 {
