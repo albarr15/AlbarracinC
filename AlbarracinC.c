@@ -40,9 +40,6 @@ void Play();
  - apply fopen() and fclose() functions to read and write from txt file
  - change applicable variables to bool data type if applicable for better readability
  - maintain consistency in formats of variable names for better readability
- - restructure functions
- 
- ! - better to make user-defined function for the storing sentences with spaces (scanf temp, fgets, remove newline char copied)
  */
 
 
@@ -75,6 +72,29 @@ displaymanageData()
     printf("[5] Export data\n");
     printf("[6] Go back to MAIN MENU\n");
 }
+
+void getInput(char sentence[], int LEN)
+{
+    int i = 0;
+    char temp;
+    char ch;
+    
+    // store dangling newline from previous input
+    scanf("%c", &temp);
+    
+    do
+    {
+        scanf("%c", &ch);
+        
+        if (ch != '\n')
+        {
+            sentence[i] = ch;
+            i++;
+            sentence[i] = '\0';
+        }
+    } while (i < LEN && ch != '\n');
+}
+
 
 /*
  askPassword requires the admin to user the correct admin password as well as masks the password with asterisks while it is being typed for additional security
@@ -139,10 +159,8 @@ int * addRecord(struct Data A[], int * s)
 {
     char inputQuestion[Q_SIZE];
     char inputAnswer[CA_SIZE];
-    int bRecorded = 0;
+    bool bRecorded = 0;
     int nExistingTopic = 1;
-    int nStringLen;
-    char temp;
     
     printf("Adding a record ...\n");
     
@@ -151,10 +169,7 @@ int * addRecord(struct Data A[], int * s)
     
     // ask user for the question and answer
     printf("Enter question: ");
-    scanf("%c", &temp); // store dangling newline
-    fgets(inputQuestion, CA_SIZE, stdin);
-    nStringLen = strlen(inputQuestion);
-    inputQuestion[nStringLen - 1] = '\0';
+    getInput(inputQuestion, CA_SIZE);
     
     printf("Enter answer: ");
     scanf("%s", inputAnswer);
@@ -187,10 +202,8 @@ int * addRecord(struct Data A[], int * s)
         strcpy(A[last_index].sAnswer, inputAnswer);
         
         // ask user for input on the record's topic, choice 1, choice 2, and choice 3
-        printf("Please input the remaining info needed for the record: \n");
         printf("Topic: ");
         scanf("%s", A[last_index].sTopic);
-        
         printf("Choice 1: ");
         scanf("%s", A[last_index].sChoice1);
         printf("Choice 2: ");
@@ -245,16 +258,10 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
     char sfTopic[TPC_SIZE];
     int nfQNum;
     char sfQuestion[Q_SIZE];
-    char sfChoice1[CA_SIZE];
-    char sfChoice2[CA_SIZE];
-    char sfChoice3[CA_SIZE];
-    char sfAnswer[CA_SIZE];
     
     int n = 0;
     int initialS = *s;
     int i = (*s - 1);
-    
-    int nStringLen;
     
     // ask user for filename
     printf("Input the filename: ");
@@ -295,10 +302,10 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
             }
             
             // get the question, choice1, choice2, choice3, and the answer
+            
             fgets(sfQuestion, Q_SIZE, fp);
             // remove newline copied by fgets
-            nStringLen = strlen(sfQuestion);
-            sfQuestion[nStringLen - 1] = '\0';
+            sfQuestion[strlen(sfQuestion) - 1] = '\0';
             
             // store data to program's record list
             strcpy(A[i].sTopic, sfTopic);
@@ -337,7 +344,7 @@ void manageData(struct Data A[], int * s)
     int isValidPW = 0;
     int isValidFile = 0;
     int nInput;
-    int bQuit = 0;
+    bool bQuit = 0;
     
     // ask for the admin password
     askPassword(&isValidPW);
@@ -404,7 +411,7 @@ void viewScores()
  */
 void Play()
 {
-    int bQuit = 0;
+    bool bQuit = 0;
     int nInput;
     
     printf("Playing ...\n\n");
