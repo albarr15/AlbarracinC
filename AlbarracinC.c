@@ -28,7 +28,7 @@ void getInput(char sentence[], int LEN);
 void askPassword(int * ptr_isValidPW);
 int * addRecord(struct Data * A, int * s);
 void editRecord();
-void deleteRecord();
+int * deleteRecord(struct Data * A, int * s);
 int * importData(struct Data A[], int * ptr_isValidFile, int * s);
 void exportData();
 void manageData(struct Data A[], int * s);
@@ -415,9 +415,97 @@ void editRecord(struct Data A[], int s)
     }
 }
 
-void deleteRecord()
+/*
+ deleteRecord allows the admin to remove a selected record
+ @param A is an array of structures which stores the records
+        *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ @return s wherein s will be deducted by 1 if deletion of record is successful
+ Pre-condition: <none>
+ */
+int * deleteRecord(struct Data A[], int * s)
 {
+    char sInputTopic[TPC_SIZE];
+    bool bValid = 0;
+    int nRecord;
+    int nIndex;
+    char cInput;
+    char temp;
+    int i;
+    
     printf("Deleting a record...\n");
+    
+    // display unique topics
+    displayUniqTopics(A, *s);
+    
+    printf("Enter the topic you want to delete: ");
+    scanf("%s", sInputTopic);
+    
+    // print all questions with the topic
+    for (i = 0; i < *s; i++)
+    {
+        // print and indicate that inputted topic is existing in the records
+        if (strcmp(A[i].sTopic, sInputTopic) == 0)
+        {
+            printf("[%d] %s\n", A[i].nQNum, A[i].sQuestion);
+            bValid = 1;
+        }
+    }
+    
+    // if inputted topic is not in records
+    if (strcmp(sInputTopic, "1") == 0)
+    {
+        // exit
+    }
+    // if user opted to go back to main menu
+    else if (!bValid)
+    {
+        printf("There are no records with the topic you entered.\n");
+    }
+    else
+    {
+        printf("Choose the record you want to delete: ");
+        scanf("%d", &nRecord);
+        
+        // find the index of the selected record
+        for (int j = 0; j < *s; j++)
+        {
+            if ((strcmp(A[j].sTopic, sInputTopic) == 0) && (A[j].nQNum == nRecord))
+            {
+                nIndex = j;
+            }
+        }
+        
+        printf("\n");
+        // display the current record to help guide user
+        displayRecord(A, nIndex);
+        
+        printf("Are you sure you want to delete the record? (y/n)\n");
+        scanf("%c", &temp);
+        scanf("%c", &cInput);
+        
+        if (cInput == 'y')
+        {
+              // re-adjust array values to compensate from deleted index
+              for (int pos = nIndex; pos < (*s - 1); pos++)
+              {
+                  strcpy(A[pos].sTopic, A[pos + 1].sTopic);
+                  
+                  // adjust question number for those under the same topic
+                  if ((strcmp(A[pos].sTopic, A[pos + 1].sTopic) == 0) && (A[pos].nQNum < A[pos + 1].nQNum))
+                  {
+                      A[pos].nQNum = (A[pos + 1].nQNum - 1);
+                  }
+                  
+                  strcpy(A[pos].sQuestion, A[pos + 1].sQuestion);
+                  strcpy(A[pos].sChoice1, A[pos + 1].sChoice1);
+                  strcpy(A[pos].sChoice2, A[pos + 1].sChoice2);
+                  strcpy(A[pos].sChoice3, A[pos + 1].sChoice3);
+                  strcpy(A[pos].sAnswer, A[pos + 1].sAnswer);
+              }
+            *s = (*s - 1);
+        }
+    }
+    return s;
 }
 
 /*
@@ -553,7 +641,7 @@ void manageData(struct Data A[], int * s)
                     break;
                     
                 case 3:
-                    deleteRecord();
+                    *s = *deleteRecord(A, s);
                     break;
                     
                 case 4:
