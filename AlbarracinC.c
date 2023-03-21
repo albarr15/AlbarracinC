@@ -22,12 +22,16 @@ struct Data
 // function declarations
 void displayMenu();
 void displaymanageData();
+void displayRecord(struct Data A[], int i);
+void displayUniqTopics(struct Data A[], int s);
+void getInput(char sentence[], int LEN);
+void askPassword(int * ptr_isValidPW);
 int * addRecord(struct Data * A, int * s);
 void editRecord();
 void deleteRecord();
 int * importData(struct Data A[], int * ptr_isValidFile, int * s);
 void exportData();
-void askPassword(int * ptr_isValidPW);
+void manageData(struct Data A[], int * s);
 void playQuiz();
 void viewScores();
 void Play();
@@ -73,6 +77,12 @@ displaymanageData()
     printf("[6] Go back to MAIN MENU\n");
 }
 
+/* displayRecord shows the record with index i's topic, question number, question, choice 1, 2, and 3, as well as the answer
+ @param A is an array of structures which stores the records
+        i is the index of the array which will be displayed
+ @return <none>
+ Pre-condition: Said record should already be existing either by importing data or adding a record
+ */
 void displayRecord(struct Data A[], int i)
 {
     printf("Topic: %s\n", A[i].sTopic);
@@ -84,6 +94,12 @@ void displayRecord(struct Data A[], int i)
     printf("Answer: %s\n", A[i].sAnswer);
 }
 
+/* displayUniqTopics shows all current records without duplicates
+ @param A is an array of structures which stores the records
+        i is the index of the array which will be displayed
+ @return <none>
+ Pre-condition: <none>
+ */
 void displayUniqTopics(struct Data A[], int s)
 {
     for (int i = 0; i < s; i++)
@@ -97,6 +113,13 @@ void displayUniqTopics(struct Data A[], int s)
     }
 }
 
+/*
+ getInput allows for sentence inputs wherein all characters before the newline character is stored in the array
+ @param sentence is a string where all characters before newline is stored
+        LEN is the maximum size the sentence can have
+ @return <none>
+ Pre-condition: <none>
+ */
 void getInput(char sentence[], int LEN)
 {
     int i = 0;
@@ -119,11 +142,10 @@ void getInput(char sentence[], int LEN)
     } while (i < LEN && ch != '\n');
 }
 
-
 /*
  askPassword requires the admin to user the correct admin password as well as masks the password with asterisks while it is being typed for additional security
  @param isValidPW is an integer variable where the validity of the password input is stored
- *ptr_isValidPW is a pointer to the variable 'isValidPW' in order for the manageData to check the validity of the password
+        *ptr_isValidPW is a pointer to the variable 'isValidPW' in order for the manageData to check the validity of the password
  @return <none>
  Pre-condition: User has selected Manage Data from the menu, user cannot backspace or add spaces when entering the password
  */
@@ -179,6 +201,13 @@ void askPassword(int * ptr_isValidPW)
     }
 }
 
+/*
+ addRecord allows the admin to create a new record given that the question and answer are not yet existing
+ @param A is an array of structures which stores the records
+        *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ @return s wherein s will be iterated by 1 if addition of record is successful
+ Pre-condition: <none>
+ */
 int * addRecord(struct Data A[], int * s)
 {
     char inputQuestion[Q_SIZE];
@@ -258,7 +287,13 @@ int * addRecord(struct Data A[], int * s)
     return s;
 }
 
-
+/*
+ editRecord allows the admin to edit a field in an existing record\
+ @param A is an array of structures which stores the records
+        s indicates the current number of non-empty elements of the array A
+ @return <none>
+ Pre-condition: <none>
+ */
 void editRecord(struct Data A[], int s)
 {
     char sInputTopic[TPC_SIZE];
@@ -385,6 +420,14 @@ void deleteRecord()
     printf("Deleting a record...\n");
 }
 
+/*
+ importData allows the admin to edit a field in an existing record
+ @param A is an array of structures which stores the records
+        *ptr_isValidFile points to the variable isValidFile
+        *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ @return <none>
+ Pre-condition: <none>
+ */
 int * importData(struct Data A[], int * ptr_isValidFile, int * s)
 {
     // declare file pointer variable
@@ -474,7 +517,8 @@ void exportData()
 }
 
 /* manageData allows the admin to add, edit, delete records, as well as import and export data after inputting the correct admin password
- @param <none>
+ @param A is an array of structures which stores the records
+        *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
  @return <none>
  Pre-condition: User has selected Manage Data from the Main Menu and has not yet opted to go back to Main Menu
  */
@@ -623,7 +667,6 @@ int main()
     while (bQuit == 0);
     
     //USED FOR DEBUGGING ONLY (prints out records)
-    
     for (int i = 0; i < (size - 1); i++)
     {
         printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[i].sTopic, Records[i].nQNum, Records[i].sQuestion, Records[i].sChoice1, Records[i].sChoice2, Records[i].sChoice3, Records[i].sAnswer);
