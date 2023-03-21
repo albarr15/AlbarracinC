@@ -266,7 +266,7 @@ void editRecord(struct Data A[], int s)
     int nIndex;
     int nInput;
     int nExistingTopic = 1;
-    
+    int bValid = 0;
     
     printf("Editing a record...\n");
     
@@ -278,90 +278,106 @@ void editRecord(struct Data A[], int s)
     //print all questions with the topic
     for (int i = 0; i < s; i++)
     {
+        // print and indicate that inputted topic is existing in the records
         if (strcmp(A[i].sTopic, sInputTopic) == 0)
         {
             printf("[%d] %s\n", A[i].nQNum, A[i].sQuestion);
+            bValid = 1;
         }
     }
     
-    printf("Choose the record you want to edit: ");
-    scanf("%d", &nRecord);
-    
-    // find the index of the selected record
-    for (int j = 0; j < s; j++)
+    // if inputted topic is not in records
+    if (strcmp(sInputTopic, "1") == 0)
     {
-        if ((strcmp(A[j].sTopic, sInputTopic) == 0) && (A[j].nQNum == nRecord))
-        {
-            nIndex = j;
-        }
+        // exit
     }
-    
-    displayRecord(A, nIndex);
-    
-    printf("\nWhat field would you like to modify?\n");
-    printf("[1] Topic\n");
-    printf("[2] Question\n");
-    printf("[3] Choice 1\n");
-    printf("[4] Choice 2\n");
-    printf("[5] Choice 3\n");
-    printf("[6] Answer\n");
-    
-    scanf("%d", &nInput);
-    
-    switch (nInput) {
-        case 1:
-            printf("Enter new topic: \n");
-            scanf("%s", A[nIndex].sTopic);
-            
-            // check if the modified topic is already existing (the number of existing questions with the same topic will be used to define nQnum of the added record)
-            for (int j = 0; (j < s); j++)
+    // if user opted to go back to main menu
+    else if (!bValid)
+    {
+        printf("There are no records with the topic you entered.\n");
+    }
+    else
+    {
+        printf("Choose the record you want to edit: ");
+        scanf("%d", &nRecord);
+        
+        // find the index of the selected record
+        for (int j = 0; j < s; j++)
+        {
+            if ((strcmp(A[j].sTopic, sInputTopic) == 0) && (A[j].nQNum == nRecord))
             {
-                // do not include j is at the last_index
-                if (j != nIndex)
+                nIndex = j;
+            }
+        }
+        
+        printf("\n");
+        // display the current record to help guide user
+        displayRecord(A, nIndex);
+        
+        printf("\nWhat field would you like to modify?\n");
+        printf("[1] Topic\n");
+        printf("[2] Question\n");
+        printf("[3] Choice 1\n");
+        printf("[4] Choice 2\n");
+        printf("[5] Choice 3\n");
+        printf("[6] Answer\n");
+        
+        scanf("%d", &nInput);
+        
+        switch (nInput) {
+            case 1:
+                printf("Enter new topic: ");
+                scanf("%s", A[nIndex].sTopic);
+                
+                // check if the modified topic is already existing (the number of existing questions with the same topic will be used to define nQnum of the added record)
+                for (int j = 0; (j < s); j++)
                 {
-                    if (strcmp(A[nIndex].sTopic, A[j].sTopic) == 0)
+                    // do not include j is at the last_index
+                    if (j != nIndex)
                     {
-                        nExistingTopic++;
+                        if (strcmp(A[nIndex].sTopic, A[j].sTopic) == 0)
+                        {
+                            nExistingTopic++;
+                        }
                     }
                 }
-            }
-            
-            // assign nQNum
-            A[nIndex].nQNum = nExistingTopic;
-            break;
-            
-        case 2:
-            printf("Enter new question: \n");
-            getInput(A[nIndex].sQuestion, Q_SIZE);
-            break;
-            
-        case 3:
-            printf("Enter new choice 1: \n");
-            scanf("%s", A[nIndex].sChoice1);
-            break;
-            
-        case 4:
-            printf("Enter new choice 2: \n");
-            scanf("%s", A[nIndex].sChoice2);
-            break;
-            
-        case 5:
-            printf("Enter new choice 3: \n");
-            scanf("%s", A[nIndex].sChoice3);
-            break;
-            
-        case 6:
-            printf("Enter new answer: \n");
-            scanf("%s", A[nIndex].sAnswer);
-            break;
-            
-        default:
-            break;
+                
+                // assign nQNum
+                A[nIndex].nQNum = nExistingTopic;
+                break;
+                
+            case 2:
+                printf("Enter new question: ");
+                getInput(A[nIndex].sQuestion, Q_SIZE);
+                break;
+                
+            case 3:
+                printf("Enter new choice 1: ");
+                scanf("%s", A[nIndex].sChoice1);
+                break;
+                
+            case 4:
+                printf("Enter new choice 2: ");
+                scanf("%s", A[nIndex].sChoice2);
+                break;
+                
+            case 5:
+                printf("Enter new choice 3: ");
+                scanf("%s", A[nIndex].sChoice3);
+                break;
+                
+            case 6:
+                printf("Enter new answer: ");
+                scanf("%s", A[nIndex].sAnswer);
+                break;
+                
+            default:
+                break;
+        }
+        
+        printf("\n[1] Go back to Main Menu\n\n");
+        editRecord(A, s);
     }
-    
-    
-    
-    
 }
 
 void deleteRecord()
