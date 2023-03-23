@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
 // #include <conio.h>
 
 #define TPC_SIZE 20
@@ -33,9 +35,9 @@ int * deleteRecord(struct Data * A, int * s);
 int * importData(struct Data A[], int * ptr_isValidFile, int * s);
 void exportData(struct Data A[], int s);
 void manageData(struct Data A[], int * s);
-void playQuiz();
+void playQuiz(struct Data A[], int s);
 void viewScores();
-void Play();
+void Play(struct Data A[], int s);
 
 
 /*
@@ -207,7 +209,7 @@ void askPassword(int * ptr_isValidPW)
  @param A is an array of structures which stores the records
         *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
  @return s wherein s will be iterated by 1 if addition of record is successful
- Pre-condition: <none>
+ Pre-condition: The answer to be inputted by the user must be the same as only one of Choice1, Choice2, or Choice3.
  */
 int * addRecord(struct Data A[], int * s)
 {
@@ -617,7 +619,6 @@ void exportData(struct Data A[], int s)
     // declare array for filename
     char sFilename[FN_SIZE];
     
-    int n = 0;
     bool bKeep_Reading = 1;
     
     // ask user for filename
@@ -713,9 +714,55 @@ void manageData(struct Data A[], int * s)
     }
 }
 
-void playQuiz()
+void playQuiz(struct Data A[], int s)
 {
+    char sInputTopic[TPC_SIZE];
+    char sInputAnswer[CA_SIZE];
+    char sQuesArray[REC_SIZE][Q_SIZE];
+    int i, j;
+    
+    // initialize number of non-empty elements in sQuesArray
+    int nQues = 0;
+    
     printf("Playing quiz...\n");
+    
+    displayUniqTopics(A, s);
+    printf("Enter the topic you want to focus on: ");
+    scanf("%s", sInputTopic);
+    
+    printf("You have selected : %s\n", sInputTopic);
+    
+    // find
+    for (i = 0; i < (s - 1); i++)
+    {
+        if (strcmp(A[i].sTopic, sInputTopic) == 0)
+        {
+            nQues++;
+            strcpy(sQuesArray[nQues - 1], A[i].sQuestion);
+        }
+    }
+    
+    // randomize questions under the topic
+        srand(time(0));
+        int num = (rand() % (nQues - 0 + 1)) + 0;
+        printf("%d.) %s\n", num, sQuesArray[num]);
+    
+    // TODO: print choices
+    
+    // get input answer from user
+    scanf("%s", sInputAnswer);
+    
+    // if correct answer, score++;
+    // else if chosen option to end game, display a message together with the final accumulated score then go back to the menu
+    // else, display sorry + option to end game & call function playQuiz again
+    
+    // use for debugging
+    /*
+     for (j = 0; j < nQues; j++)
+    {
+        printf("%s\n", sQuesArray[j]);
+    }
+     */
 }
 
 void viewScores()
@@ -728,7 +775,7 @@ void viewScores()
  @return <none>
  Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
  */
-void Play()
+void Play(struct Data A[], int s)
 {
     bool bQuit = 0;
     int nInput;
@@ -747,7 +794,7 @@ void Play()
         switch (nInput)
         {
             case 1:
-                playQuiz();
+                playQuiz(A, s);
                 break;
                 
             case 2:
@@ -786,7 +833,7 @@ int main()
                 break;
                 
             case 2:
-                Play();
+                Play(&(Records[0]), size);
                 break;
                 
             case 3:
