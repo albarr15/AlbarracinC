@@ -7,6 +7,7 @@
 #define Q_SIZE 150
 #define CA_SIZE 30
 #define REC_SIZE 50
+#define FN_SIZE 30
 
 struct Data
 {
@@ -27,10 +28,10 @@ void displayUniqTopics(struct Data A[], int s);
 void getInput(char sentence[], int LEN);
 void askPassword(int * ptr_isValidPW);
 int * addRecord(struct Data * A, int * s);
-void editRecord();
+void editRecord(struct Data A[], int s);
 int * deleteRecord(struct Data * A, int * s);
 int * importData(struct Data A[], int * ptr_isValidFile, int * s);
-void exportData();
+void exportData(struct Data A[], int s);
 void manageData(struct Data A[], int * s);
 void playQuiz();
 void viewScores();
@@ -509,7 +510,7 @@ int * deleteRecord(struct Data A[], int * s)
 }
 
 /*
- importData allows the admin to edit a field in an existing record
+ importData allows the admin to store the data from a text file to the program's records
  @param A is an array of structures which stores the records
         *ptr_isValidFile points to the variable isValidFile
         *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
@@ -522,7 +523,7 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
     FILE * fp;
     
     // declare array for filename
-    char sFilename[30];
+    char sFilename[FN_SIZE];
     
     // declare temporary variables for scanned records from text file
     char sfTopic[TPC_SIZE];
@@ -599,9 +600,56 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
     return s;
 }
 
-void exportData()
+/*
+ exportData allows the admin to store the data from the program's records to a file
+ @param A is an array of structures which stores the records
+        s indicates the current number of non-empty elements of the array A
+ @return <none>
+ Pre-condition: <none>
+ */
+void exportData(struct Data A[], int s)
 {
     printf("Exporting data...\n");
+    
+    // declare file pointer variable
+    FILE * fp;
+    
+    // declare array for filename
+    char sFilename[FN_SIZE];
+    
+    int n = 0;
+    bool bKeep_Reading = 1;
+    
+    // ask user for filename
+    printf("Input the filename: ");
+    scanf("%s", sFilename);
+    
+    // open file named sFilename in writing mode
+    fp = fopen(sFilename, "w");
+    
+    // iterate over all elements of array A unless it is at the end of file
+    for (int i = 0; (i < (s - 1)) && (bKeep_Reading); i++)
+    {
+        if (feof(fp))
+        {
+            // exit loop
+            bKeep_Reading = 0;
+        }
+        else
+        {
+            // print all information
+            fprintf(fp, "%s\n", A[i].sTopic);
+            fprintf(fp, "%d\n", A[i].nQNum);
+            fprintf(fp, "%s\n", A[i].sQuestion);
+            fprintf(fp, "%s\n", A[i].sChoice1);
+            fprintf(fp, "%s\n", A[i].sChoice2);
+            fprintf(fp, "%s\n", A[i].sChoice3);
+            fprintf(fp, "%s\n\n", A[i].sAnswer);
+        }
+    }
+    
+    // close file
+    fclose(fp);
 }
 
 /* manageData allows the admin to add, edit, delete records, as well as import and export data after inputting the correct admin password
@@ -649,7 +697,7 @@ void manageData(struct Data A[], int * s)
                     break;
                     
                 case 5:
-                    exportData();
+                    exportData(A, *s);
                     break;
                     
                 case 6:
