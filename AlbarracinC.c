@@ -22,6 +22,12 @@ struct Data
     char sAnswer[CA_SIZE];
 };
 
+struct PlayerTag
+{
+    char sName[51];
+    int nScore;
+};
+
 // function declarations
 void displayMenu();
 void displaymanageData();
@@ -35,9 +41,9 @@ int * deleteRecord(struct Data * A, int * s);
 int * importData(struct Data A[], int * ptr_isValidFile, int * s);
 void exportData(struct Data A[], int s);
 void manageData(struct Data A[], int * s);
-void playQuiz(struct Data A[], int s);
+void playQuiz(struct Data A[], struct PlayerTag B[], int Asize, int * Bsize);
 void viewScores();
-void Play(struct Data A[], int s);
+void Play(struct Data A[], struct PlayerTag B[], int Asize, int * Bsize);
 
 
 /*
@@ -714,26 +720,41 @@ void manageData(struct Data A[], int * s)
     }
 }
 
-void playQuiz(struct Data A[], int s)
+void playQuiz(struct Data A[], struct PlayerTag B[], int Asize, int * Bsize)
 {
     char sInputTopic[TPC_SIZE];
     char sInputAnswer[CA_SIZE];
     char sQuesArray[REC_SIZE][Q_SIZE];
     int i, j;
     
+    char sInputName[51];
+    
     // initialize number of non-empty elements in sQuesArray
     int nQues = 0;
     
     printf("Playing quiz...\n");
     
-    displayUniqTopics(A, s);
+    // Enter player name
+    printf("Enter your name: ");
+    
+    // store value to struct array
+    scanf("%s", sInputName);
+    strcpy(B[*Bsize - 1].sName, sInputName);
+    
+    // add 1 to the current size of the B array
+    *Bsize = *Bsize + 1;
+    
+    // initialize score of player to zero
+    B[*Bsize - 1].nScore = 0;
+    
+    displayUniqTopics(A, Asize);
     printf("Enter the topic you want to focus on: ");
     scanf("%s", sInputTopic);
     
     printf("You have selected : %s\n", sInputTopic);
     
     // find
-    for (i = 0; i < (s - 1); i++)
+    for (i = 0; i < (Asize - 1); i++)
     {
         if (strcmp(A[i].sTopic, sInputTopic) == 0)
         {
@@ -775,7 +796,7 @@ void viewScores()
  @return <none>
  Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
  */
-void Play(struct Data A[], int s)
+void Play(struct Data A[], struct PlayerTag B[], int Asize, int * Bsize)
 {
     bool bQuit = 0;
     int nInput;
@@ -794,7 +815,7 @@ void Play(struct Data A[], int s)
         switch (nInput)
         {
             case 1:
-                playQuiz(A, s);
+                playQuiz(A, B, Asize, Bsize);
                 break;
                 
             case 2:
@@ -819,6 +840,8 @@ int main()
     bool bQuit = 0;
     struct Data Records[REC_SIZE];
     int size = 1;
+    struct PlayerTag Player[REC_SIZE];
+    int size2 = 1;
     
     do
     {
@@ -833,7 +856,7 @@ int main()
                 break;
                 
             case 2:
-                Play(&(Records[0]), size);
+                Play(&(Records[0]), &(Player[0]), size, &size2);
                 break;
                 
             case 3:
