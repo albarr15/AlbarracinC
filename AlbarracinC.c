@@ -22,10 +22,12 @@ struct Data
     char sAnswer[CA_SIZE];
 };
 
-struct PlayerTag
+struct CurrentPlayTag
 {
-    char sName[51];
-    int nScore;
+    char sCP_Name[51];
+    char sCP_Question[Q_SIZE];
+    char sCP_Answer[CA_SIZE];
+    int nCP_Score;
 };
 
 // function declarations
@@ -41,9 +43,9 @@ int * deleteRecord(struct Data * A, int * s);
 int * importData(struct Data A[], int * ptr_isValidFile, int * s);
 void exportData(struct Data A[], int s);
 void manageData(struct Data A[], int * s);
-void playQuiz(struct Data A[], struct PlayerTag B[], int Asize, int * Bsize);
+void playQuiz(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize);
 void viewScores();
-void Play(struct Data A[], struct PlayerTag B[], int Asize, int * Bsize);
+void Play(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize);
 
 
 /*
@@ -120,6 +122,37 @@ void displayUniqTopics(struct Data A[], int s)
             printf("%s\n", A[i].sTopic);
         }
     }
+}
+
+void displayScores()
+{
+    int nRow = 1;
+    // declare file pointer variable
+    FILE * fp;
+    
+    fp = fopen("score.txt", "r");
+    
+    // declare temporary variables for scanned names and scores from text file
+    char sfName[51];
+    int nfScore;
+    
+        printf("Reading scores from file ...\n");
+    
+        printf("Row #\t");
+        printf("Player Name\t");
+        printf("Score\t\n");
+    
+    while ((fscanf(fp, "%s\n", sfName) == 1) && (!feof(fp)))
+    {
+        printf("%d\t", nRow);
+        nRow++;
+        printf("%s\t\t", sfName);
+        // get score
+        fscanf(fp, "%d\n", &nfScore);
+        printf("%d\t\n\n", nfScore);
+    }
+    
+    fclose(fp);
 }
 
 /*
@@ -720,14 +753,12 @@ void manageData(struct Data A[], int * s)
     }
 }
 
-void playQuiz(struct Data A[], struct PlayerTag B[], int Asize, int * Bsize)
+void playQuiz(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize)
 {
     char sInputTopic[TPC_SIZE];
     char sInputAnswer[CA_SIZE];
     char sQuesArray[REC_SIZE][Q_SIZE];
     int i, j;
-    
-    char sInputName[51];
     
     // initialize number of non-empty elements in sQuesArray
     int nQues = 0;
@@ -738,15 +769,15 @@ void playQuiz(struct Data A[], struct PlayerTag B[], int Asize, int * Bsize)
     printf("Enter your name: ");
     
     // store value to struct array
-    scanf("%s", sInputName);
-    strcpy(B[*Bsize - 1].sName, sInputName);
+    scanf("%s", B[*Bsize - 1].sCP_Name);
     
     // add 1 to the current size of the B array
     *Bsize = *Bsize + 1;
     
     // initialize score of player to zero
-    B[*Bsize - 1].nScore = 0;
+    B[*Bsize - 1].nCP_Score = 0;
     
+    // TODO: start of new function
     displayUniqTopics(A, Asize);
     printf("Enter the topic you want to focus on: ");
     scanf("%s", sInputTopic);
@@ -765,15 +796,39 @@ void playQuiz(struct Data A[], struct PlayerTag B[], int Asize, int * Bsize)
     
     // randomize questions under the topic
         srand(time(0));
-        int num = (rand() % (nQues - 0 + 1)) + 0;
-        printf("%d.) %s\n", num, sQuesArray[num]);
+        int num = (rand() % (nQues));
+        strcpy(B[0].sCP_Question, sQuesArray[num]);
+        printf("%d.) %s\n", num, B[0].sCP_Question);
     
     // TODO: print choices
+    for (j = 0; j < (Asize - 1); j++)
+    {
+        if (strcmp(B[0].sCP_Question, A[j].sQuestion) == 0)
+        {
+            printf("[1] %s\n", A[j].sChoice1);
+            printf("[2] %s\n", A[j].sChoice2);
+            printf("[3] %s\n", A[j].sChoice3);
+            printf("%s\n", A[j].sAnswer);
+        }
+    }
     
     // get input answer from user
-    scanf("%s", sInputAnswer);
+        scanf("%s", sInputAnswer);
+    
+    // TODO: END OF NEW FUNCTION
+    // NOTE: Create a new function to loop the selection of topic, and q&a portion
     
     // if correct answer, score++;
+        if (strcmp(sInputAnswer, A[j].sAnswer) == 0)
+        {
+            B[j].nCP_Score++;
+            playQuiz(A, B, Asize, Bsize);
+        }
+    else
+    {
+        printf("Total score: %d\n", B[j].nCP_Score);
+    }
+    
     // else if chosen option to end game, display a message together with the final accumulated score then go back to the menu
     // else, display sorry + option to end game & call function playQuiz again
     
@@ -789,6 +844,7 @@ void playQuiz(struct Data A[], struct PlayerTag B[], int Asize, int * Bsize)
 void viewScores()
 {
     printf("Viewing scores...\n");
+    displayScores();
 }
 
 /* Play allows the user to play the quiz, view the scores, as well as go back to the Main Menu
@@ -796,7 +852,7 @@ void viewScores()
  @return <none>
  Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
  */
-void Play(struct Data A[], struct PlayerTag B[], int Asize, int * Bsize)
+void Play(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize)
 {
     bool bQuit = 0;
     int nInput;
@@ -840,7 +896,7 @@ int main()
     bool bQuit = 0;
     struct Data Records[REC_SIZE];
     int size = 1;
-    struct PlayerTag Player[REC_SIZE];
+    struct CurrentPlayTag Playing[REC_SIZE];
     int size2 = 1;
     
     do
@@ -856,7 +912,7 @@ int main()
                 break;
                 
             case 2:
-                Play(&(Records[0]), &(Player[0]), size, &size2);
+                Play(&(Records[0]), &(Playing[0]), size, &size2);
                 break;
                 
             case 3:
