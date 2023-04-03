@@ -759,11 +759,12 @@ void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize)
     int dInputAnswer = 0;
     char sQuesArray[REC_SIZE][Q_SIZE];
     int i, j;
+    bool isPlaying = 1;
+    
+    printf("Playing quiz...\n");
     
     // initialize number of non-empty elements in sQuesArray
     int nQues = 0;
-    
-    printf("Playing quiz...\n");
     
     // Enter player name
     printf("Enter your name: ");
@@ -774,93 +775,122 @@ void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize)
     // initialize score of player to zero
     B->nCP_Score = 0;
     
-    // TODO: start of new function
-    displayUniqTopics(A, Asize);
-    
-    printf("Enter the topic you want to focus on: ");
-    scanf("%s", sInputTopic);
-    
-    printf("You have selected : %s\n", sInputTopic);
-    
-    // find
-    for (i = 0; i < (Asize - 1); i++)
+    while (isPlaying)
     {
-        if (strcmp(A[i].sTopic, sInputTopic) == 0)
-        {
-            strcpy(sQuesArray[nQues], A[i].sQuestion);
-            nQues++;
-        }
-    }
-    
-    // randomize questions under the topic
-        srand(time(0));
-        int num = (rand() % (nQues - 1));
-        strcpy(B->sCP_Question, sQuesArray[num]);
-        printf("%d.) %s\n", num, B->sCP_Question);
-    
-    // TODO: print choices
-    for (j = 0; j < (Asize - 1); j++)
-    {
-        if (strcmp(B->sCP_Question, A[j].sQuestion) == 0)
-        {
-            printf("[1] %s\n", A[j].sChoice1);
-            printf("[2] %s\n", A[j].sChoice2);
-            printf("[3] %s\n", A[j].sChoice3);
-            printf("%s\n", A[j].sAnswer);
-        }
-    }
-    
-    // get input answer from user
-        scanf("%d", &dInputAnswer);
-    
-    // TODO: END OF NEW FUNCTION
-    // NOTE: Create a new function to loop the selection of topic, and q&a portion
-    
-    // if correct answer, score++;
-    switch (dInputAnswer)
-    {
-        case 1:
-            printf("You chose 1\n");
-            if (strcmp(A[j].sChoice1, A[j].sAnswer) == 0)
-            {
-                B->nCP_Score++;
-            }
-            break;
+        nQues = 0;
         
-        case 2:
-            printf("You chose 2\n");
-            if (strcmp(A[j].sChoice2, A[j].sAnswer) == 0)
+        displayUniqTopics(A, Asize);
+        
+        printf("Enter the topic you want to focus on: ");
+        scanf("%s", sInputTopic);
+        
+        if (strcmp(sInputTopic, "0") == 0)
+        {
+            isPlaying = 0;
+        }
+        else
+        {
+            printf("You have selected : %s\n", sInputTopic);
+            
+            // find
+            for (i = 0; i < (Asize - 1); i++)
             {
-                B->nCP_Score++;
+                if (strcmp(A[i].sTopic, sInputTopic) == 0)
+                {
+                    strcpy(sQuesArray[nQues], A[i].sQuestion);
+                    nQues++;
+                }
             }
-            break;
             
-        case 3:
-            printf("You chose 3\n");
-            if (strcmp(A[j].sChoice3, A[j].sAnswer) == 0)
+            // use for debugging
+             for (j = 0; j < nQues; j++)
             {
-                B->nCP_Score++;
+                printf("%s\n", sQuesArray[j]);
             }
-            break;
             
-        default:
-            break;
+            // randomize questions under the topic
+                srand(time(0));
+                int num = (rand() % nQues);
+                strcpy(B->sCP_Question, sQuesArray[num]);
+                printf("%d.) %s\n", num + 1, B->sCP_Question);
             
+            // print choices
+            for (j = 0; j < (Asize - 1); j++)
+            {
+                if (strcmp(B->sCP_Question, A[j].sQuestion) == 0)
+                {
+                    printf("[1] %s\n", A[j].sChoice1);
+                    printf("[2] %s\n", A[j].sChoice2);
+                    printf("[3] %s\n", A[j].sChoice3);
+                    printf("%s\n", A[j].sAnswer);
+                }
+            }
+            
+            // get input answer from user
+                scanf("%d", &dInputAnswer);
+            
+            // if correct answer, add 1 to score
+            switch (dInputAnswer)
+            {
+                case 1:
+                    printf("You chose 1\n\n");
+                    if (strcmp(A[j].sChoice1, A[j].sAnswer) == 0)
+                    {
+                        B->nCP_Score++;
+                    }
+                    else
+                    {
+                        printf("Sorry, incorrect answer.\n\n");
+                    }
+                    
+                    for (i = 0; i < nQues; i++)
+                    {
+                        strcpy(sQuesArray[i], "");
+                    }
+                    break;
+                
+                case 2:
+                    printf("You chose 2\n\n");
+                    if (strcmp(A[j].sChoice2, A[j].sAnswer) == 0)
+                    {
+                        B->nCP_Score++;
+                    }
+                    else
+                    {
+                        printf("Sorry, incorrect answer.\n\n");
+                    }
+                    for (i = 0; i < nQues; i++)
+                    {
+                        strcpy(sQuesArray[i], "");
+                    }
+                    break;
+                    
+                case 3:
+                    printf("You chose 3\n\n");
+                    if (strcmp(A[j].sChoice3, A[j].sAnswer) == 0)
+                    {
+                        B->nCP_Score++;
+                    }
+                    else
+                    {
+                        printf("Sorry, incorrect answer.\n\n");
+                    }
+                    for (i = 0; i < nQues; i++)
+                    {
+                        strcpy(sQuesArray[i], "");
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
     }
-    
-    
-printf("Total score: %d\n", B->nCP_Score);
+    }
+
+    printf("Total score: %d\n", B->nCP_Score);
     
     // else if chosen option to end game, display a message together with the final accumulated score then go back to the menu
     // else, display sorry + option to end game & call function playQuiz again
-    
-    // use for debugging
-    /*
-     for (j = 0; j < nQues; j++)
-    {
-        printf("%s\n", sQuesArray[j]);
-    }
-     */
 }
 
 void viewScores()
