@@ -43,9 +43,9 @@ int * deleteRecord(struct Data * A, int * s);
 int * importData(struct Data A[], int * ptr_isValidFile, int * s);
 void exportData(struct Data A[], int s);
 void manageData(struct Data A[], int * s);
-void playQuiz(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize);
+void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize);
 void viewScores();
-void Play(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize);
+void Play(struct Data A[], struct CurrentPlayTag *B, int Asize);
 
 
 /*
@@ -753,10 +753,10 @@ void manageData(struct Data A[], int * s)
     }
 }
 
-void playQuiz(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize)
+void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize)
 {
     char sInputTopic[TPC_SIZE];
-    char sInputAnswer[CA_SIZE];
+    int dInputAnswer = 0;
     char sQuesArray[REC_SIZE][Q_SIZE];
     int i, j;
     
@@ -769,16 +769,14 @@ void playQuiz(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize
     printf("Enter your name: ");
     
     // store value to struct array
-    scanf("%s", B[*Bsize - 1].sCP_Name);
-    
-    // add 1 to the current size of the B array
-    *Bsize = *Bsize + 1;
+    scanf("%s", B->sCP_Name);
     
     // initialize score of player to zero
-    B[*Bsize - 1].nCP_Score = 0;
+    B->nCP_Score = 0;
     
     // TODO: start of new function
     displayUniqTopics(A, Asize);
+    
     printf("Enter the topic you want to focus on: ");
     scanf("%s", sInputTopic);
     
@@ -789,21 +787,21 @@ void playQuiz(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize
     {
         if (strcmp(A[i].sTopic, sInputTopic) == 0)
         {
+            strcpy(sQuesArray[nQues], A[i].sQuestion);
             nQues++;
-            strcpy(sQuesArray[nQues - 1], A[i].sQuestion);
         }
     }
     
     // randomize questions under the topic
         srand(time(0));
-        int num = (rand() % (nQues));
-        strcpy(B[0].sCP_Question, sQuesArray[num]);
-        printf("%d.) %s\n", num, B[0].sCP_Question);
+        int num = (rand() % (nQues - 1));
+        strcpy(B->sCP_Question, sQuesArray[num]);
+        printf("%d.) %s\n", num, B->sCP_Question);
     
     // TODO: print choices
     for (j = 0; j < (Asize - 1); j++)
     {
-        if (strcmp(B[0].sCP_Question, A[j].sQuestion) == 0)
+        if (strcmp(B->sCP_Question, A[j].sQuestion) == 0)
         {
             printf("[1] %s\n", A[j].sChoice1);
             printf("[2] %s\n", A[j].sChoice2);
@@ -813,21 +811,45 @@ void playQuiz(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize
     }
     
     // get input answer from user
-        scanf("%s", sInputAnswer);
+        scanf("%d", &dInputAnswer);
     
     // TODO: END OF NEW FUNCTION
     // NOTE: Create a new function to loop the selection of topic, and q&a portion
     
     // if correct answer, score++;
-        if (strcmp(sInputAnswer, A[j].sAnswer) == 0)
-        {
-            B[j].nCP_Score++;
-            playQuiz(A, B, Asize, Bsize);
-        }
-    else
+    switch (dInputAnswer)
     {
-        printf("Total score: %d\n", B[j].nCP_Score);
+        case 1:
+            printf("You chose 1\n");
+            if (strcmp(A[j].sChoice1, A[j].sAnswer) == 0)
+            {
+                B->nCP_Score++;
+            }
+            break;
+        
+        case 2:
+            printf("You chose 2\n");
+            if (strcmp(A[j].sChoice2, A[j].sAnswer) == 0)
+            {
+                B->nCP_Score++;
+            }
+            break;
+            
+        case 3:
+            printf("You chose 3\n");
+            if (strcmp(A[j].sChoice3, A[j].sAnswer) == 0)
+            {
+                B->nCP_Score++;
+            }
+            break;
+            
+        default:
+            break;
+            
     }
+    
+    
+printf("Total score: %d\n", B->nCP_Score);
     
     // else if chosen option to end game, display a message together with the final accumulated score then go back to the menu
     // else, display sorry + option to end game & call function playQuiz again
@@ -852,7 +874,7 @@ void viewScores()
  @return <none>
  Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
  */
-void Play(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize)
+void Play(struct Data A[], struct CurrentPlayTag *B, int Asize)
 {
     bool bQuit = 0;
     int nInput;
@@ -871,7 +893,7 @@ void Play(struct Data A[], struct CurrentPlayTag B[], int Asize, int * Bsize)
         switch (nInput)
         {
             case 1:
-                playQuiz(A, B, Asize, Bsize);
+                playQuiz(A, B, Asize);
                 break;
                 
             case 2:
@@ -896,8 +918,7 @@ int main()
     bool bQuit = 0;
     struct Data Records[REC_SIZE];
     int size = 1;
-    struct CurrentPlayTag Playing[REC_SIZE];
-    int size2 = 1;
+    struct CurrentPlayTag Playing;
     
     do
     {
@@ -912,7 +933,7 @@ int main()
                 break;
                 
             case 2:
-                Play(&(Records[0]), &(Playing[0]), size, &size2);
+                Play(&(Records[0]), &Playing, size);
                 break;
                 
             case 3:
