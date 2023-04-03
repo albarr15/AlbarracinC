@@ -90,7 +90,7 @@ displaymanageData()
 
 /* displayRecord shows the record with index i's topic, question number, question, choice 1, 2, and 3, as well as the answer
  @param A is an array of structures which stores the records
-        i is the index of the array which will be displayed
+ i is the index of the array which will be displayed
  @return <none>
  Pre-condition: Said record should already be existing either by importing data or adding a record
  */
@@ -107,7 +107,7 @@ void displayRecord(struct Data A[], int i)
 
 /* displayUniqTopics shows all current records without duplicates
  @param A is an array of structures which stores the records
-        i is the index of the array which will be displayed
+ i is the index of the array which will be displayed
  @return <none>
  Pre-condition: <none>
  */
@@ -136,11 +136,11 @@ void displayScores()
     char sfName[51];
     int nfScore;
     
-        printf("Reading scores from file ...\n");
+    printf("Reading scores from file ...\n");
     
-        printf("Row #\t");
-        printf("Player Name\t");
-        printf("Score\t\n");
+    printf("Row #\t");
+    printf("Player Name\t");
+    printf("Score\t\n");
     
     while ((fscanf(fp, "%s\n", sfName) == 1) && (!feof(fp)))
     {
@@ -158,7 +158,7 @@ void displayScores()
 /*
  getInput allows for sentence inputs wherein all characters before the newline character is stored in the array
  @param sentence is a string where all characters before newline is stored
-        LEN is the maximum size the sentence can have
+ LEN is the maximum size the sentence can have
  @return <none>
  Pre-condition: <none>
  */
@@ -187,7 +187,7 @@ void getInput(char sentence[], int LEN)
 /*
  askPassword requires the admin to user the correct admin password as well as masks the password with asterisks while it is being typed for additional security
  @param isValidPW is an integer variable where the validity of the password input is stored
-        *ptr_isValidPW is a pointer to the variable 'isValidPW' in order for the manageData to check the validity of the password
+ *ptr_isValidPW is a pointer to the variable 'isValidPW' in order for the manageData to check the validity of the password
  @return <none>
  Pre-condition: User has selected Manage Data from the menu, user cannot backspace or add spaces when entering the password
  */
@@ -246,7 +246,7 @@ void askPassword(int * ptr_isValidPW)
 /*
  addRecord allows the admin to create a new record given that the question and answer are not yet existing
  @param A is an array of structures which stores the records
-        *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
  @return s wherein s will be iterated by 1 if addition of record is successful
  Pre-condition: The answer to be inputted by the user must be the same as only one of Choice1, Choice2, or Choice3.
  */
@@ -332,7 +332,7 @@ int * addRecord(struct Data A[], int * s)
 /*
  editRecord allows the admin to edit a field in an existing record\
  @param A is an array of structures which stores the records
-        s indicates the current number of non-empty elements of the array A
+ s indicates the current number of non-empty elements of the array A
  @return <none>
  Pre-condition: <none>
  */
@@ -460,7 +460,7 @@ void editRecord(struct Data A[], int s)
 /*
  deleteRecord allows the admin to remove a selected record
  @param A is an array of structures which stores the records
-        *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
  @return s wherein s will be deducted by 1 if deletion of record is successful
  Pre-condition: <none>
  */
@@ -527,23 +527,23 @@ int * deleteRecord(struct Data A[], int * s)
         
         if (cInput == 'y')
         {
-              // re-adjust array values to compensate from deleted index
-              for (int pos = nIndex; pos < (*s - 1); pos++)
-              {
-                  strcpy(A[pos].sTopic, A[pos + 1].sTopic);
-                  
-                  // adjust question number for those under the same topic
-                  if ((strcmp(A[pos].sTopic, A[pos + 1].sTopic) == 0) && (A[pos].nQNum < A[pos + 1].nQNum))
-                  {
-                      A[pos].nQNum = (A[pos + 1].nQNum - 1);
-                  }
-                  
-                  strcpy(A[pos].sQuestion, A[pos + 1].sQuestion);
-                  strcpy(A[pos].sChoice1, A[pos + 1].sChoice1);
-                  strcpy(A[pos].sChoice2, A[pos + 1].sChoice2);
-                  strcpy(A[pos].sChoice3, A[pos + 1].sChoice3);
-                  strcpy(A[pos].sAnswer, A[pos + 1].sAnswer);
-              }
+            // re-adjust array values to compensate from deleted index
+            for (int pos = nIndex; pos < (*s - 1); pos++)
+            {
+                strcpy(A[pos].sTopic, A[pos + 1].sTopic);
+                
+                // adjust question number for those under the same topic
+                if ((strcmp(A[pos].sTopic, A[pos + 1].sTopic) == 0) && (A[pos].nQNum < A[pos + 1].nQNum))
+                {
+                    A[pos].nQNum = (A[pos + 1].nQNum - 1);
+                }
+                
+                strcpy(A[pos].sQuestion, A[pos + 1].sQuestion);
+                strcpy(A[pos].sChoice1, A[pos + 1].sChoice1);
+                strcpy(A[pos].sChoice2, A[pos + 1].sChoice2);
+                strcpy(A[pos].sChoice3, A[pos + 1].sChoice3);
+                strcpy(A[pos].sAnswer, A[pos + 1].sAnswer);
+            }
             *s = (*s - 1);
         }
     }
@@ -553,8 +553,8 @@ int * deleteRecord(struct Data A[], int * s)
 /*
  importData allows the admin to store the data from a text file to the program's records
  @param A is an array of structures which stores the records
-        *ptr_isValidFile points to the variable isValidFile
-        *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ *ptr_isValidFile points to the variable isValidFile
+ *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
  @return <none>
  Pre-condition: <none>
  */
@@ -644,7 +644,7 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
 /*
  exportData allows the admin to store the data from the program's records to a file
  @param A is an array of structures which stores the records
-        s indicates the current number of non-empty elements of the array A
+ s indicates the current number of non-empty elements of the array A
  @return <none>
  Pre-condition: <none>
  */
@@ -694,7 +694,7 @@ void exportData(struct Data A[], int s)
 
 /* manageData allows the admin to add, edit, delete records, as well as import and export data after inputting the correct admin password
  @param A is an array of structures which stores the records
-        *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
  @return <none>
  Pre-condition: User has selected Manage Data from the Main Menu and has not yet opted to go back to Main Menu
  */
@@ -803,16 +803,16 @@ void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize)
             }
             
             // use for debugging
-             for (j = 0; j < nQues; j++)
+            for (j = 0; j < nQues; j++)
             {
                 printf("%s\n", sQuesArray[j]);
             }
             
             // randomize questions under the topic
-                srand(time(0));
-                int num = (rand() % nQues);
-                strcpy(B->sCP_Question, sQuesArray[num]);
-                printf("%d.) %s\n", num + 1, B->sCP_Question);
+            srand(time(0));
+            int num = (rand() % nQues);
+            strcpy(B->sCP_Question, sQuesArray[num]);
+            printf("%d.) %s\n", num + 1, B->sCP_Question);
             
             // print choices
             for (j = 0; j < (Asize - 1); j++)
@@ -826,8 +826,9 @@ void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize)
                 }
             }
             
+            
             // get input answer from user
-                scanf("%d", &dInputAnswer);
+            scanf("%d", &dInputAnswer);
             
             // if correct answer, add 1 to score
             switch (dInputAnswer)
@@ -848,7 +849,7 @@ void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize)
                         strcpy(sQuesArray[i], "");
                     }
                     break;
-                
+                    
                 case 2:
                     printf("You chose 2\n\n");
                     if (strcmp(A[j].sChoice2, A[j].sAnswer) == 0)
@@ -884,9 +885,9 @@ void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize)
                 default:
                     break;
             }
+        }
     }
-    }
-
+    
     printf("Total score: %d\n", B->nCP_Score);
     
     // else if chosen option to end game, display a message together with the final accumulated score then go back to the menu
