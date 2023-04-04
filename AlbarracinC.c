@@ -265,6 +265,11 @@ int * addRecord(struct Data A[], int * s)
     // define last_index to determine where the added record will be placed in the struct array
     int last_index = (*s - 1);
     
+    if (*s == 1)
+    {
+        last_index = 0;
+    }
+    
     // ask user for the question and answer
     printf("Enter question: ");
     getInput(inputQuestion, CA_SIZE);
@@ -337,7 +342,7 @@ int * addRecord(struct Data A[], int * s)
  @param A is an array of structures which stores the records
  s indicates the current number of non-empty elements of the array A
  @return <none>
- Pre-condition: <none>
+ Pre-condition: When editing topic, the new topic must not be
  */
 void editRecord(struct Data A[], int s)
 {
@@ -406,16 +411,28 @@ void editRecord(struct Data A[], int s)
         
         switch (nInput) {
             case 1:
+                // re-adjust nQNum of those within the same topic
+                for (int j = 0; j < (s - 1); j++)
+                {
+                    if (j != nIndex)
+                    {
+                        if ((strcmp(A[nIndex].sTopic, A[j].sTopic) == 0) && (A[nIndex].nQNum < A[j].nQNum))
+                        {
+                            A[j].nQNum = A[j].nQNum - 1;
+                        }
+                    }
+                }
+                
                 printf("Enter new topic: ");
                 scanf("%s", A[nIndex].sTopic);
                 
                 // check if the modified topic is already existing (the number of existing questions with the same topic will be used to define nQnum of the added record)
-                for (int j = 0; (j < s); j++)
+                for (int k = 0; (k < s); k++)
                 {
-                    // do not include j is at the last_index
-                    if (j != nIndex)
+                    if (k != nIndex)
                     {
-                        if (strcmp(A[nIndex].sTopic, A[j].sTopic) == 0)
+                        // do not include j is at the last_index
+                        if (strcmp(A[nIndex].sTopic, A[k].sTopic) == 0)
                         {
                             nExistingTopic++;
                         }
@@ -695,6 +712,22 @@ void exportData(struct Data A[], int s)
     fclose(fp);
 }
 
+int * backMainMenu(struct Data A[], int * s)
+{
+    for (int i = 0; i < (*s - 1); i++)
+    {
+        strcpy((A[i]).sTopic, "");
+        (A[i]).nQNum = 0;
+        strcpy((A[i]).sChoice1, "");
+        strcpy((A[i]).sChoice2, "");
+        strcpy((A[i]).sChoice3, "");
+        strcpy((A[i]).sAnswer, "");
+    }
+    
+    *s = 1;
+    return s;
+}
+
 /* manageData allows the admin to add, edit, delete records, as well as import and export data after inputting the correct admin password
  @param A is an array of structures which stores the records
  *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
@@ -745,6 +778,7 @@ void manageData(struct Data A[], int * s)
                     
                 case 6:
                     printf("Going back to MAIN MENU...\n");
+                    *s = *backMainMenu(A, s);
                     bQuit = 1;
                     break;
                     
