@@ -27,6 +27,9 @@ struct CurrentPlayTag
     char sCP_Name[51];
     char sCP_Question[Q_SIZE];
     char sCP_Answer[CA_SIZE];
+    char sCP_Choice1[CA_SIZE];
+    char sCP_Choice2[CA_SIZE];
+    char sCP_Choice3[CA_SIZE];
     int nCP_Score;
 };
 
@@ -756,7 +759,7 @@ void manageData(struct Data A[], int * s)
 void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize)
 {
     char sInputTopic[TPC_SIZE];
-    int dInputAnswer = 0;
+    char sInputAnswer[CA_SIZE];
     char sQuesArray[REC_SIZE][Q_SIZE];
     int i, j;
     bool isPlaying = 1;
@@ -803,10 +806,15 @@ void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize)
             }
             
             // use for debugging
-            for (j = 0; j < nQues; j++)
+            /*
+             for (j = 0; j < nQues; j++)
             {
                 printf("%s\n", sQuesArray[j]);
             }
+             */
+            
+            // print current score
+            printf("Current Score: %d\n", B->nCP_Score);
             
             // randomize questions under the topic
             srand(time(0));
@@ -814,76 +822,34 @@ void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize)
             strcpy(B->sCP_Question, sQuesArray[num]);
             printf("%d.) %s\n", num + 1, B->sCP_Question);
             
-            // print choices
+            // store answers and choices in currentplay array
             for (j = 0; j < (Asize - 1); j++)
             {
                 if (strcmp(B->sCP_Question, A[j].sQuestion) == 0)
                 {
-                    printf("[1] %s\n", A[j].sChoice1);
-                    printf("[2] %s\n", A[j].sChoice2);
-                    printf("[3] %s\n", A[j].sChoice3);
-                    printf("%s\n", A[j].sAnswer);
+                    strcpy(B->sCP_Answer, A[j].sAnswer);
+                    strcpy(B->sCP_Choice1, A[j].sChoice1);
+                    strcpy(B->sCP_Choice2, A[j].sChoice2);
+                    strcpy(B->sCP_Choice3, A[j].sChoice3);
+                    
+                    // print choices
+                    printf("- %s\n", A[j].sChoice1);
+                    printf("- %s\n", A[j].sChoice2);
+                    printf("- %s\n\n", A[j].sChoice3);
                 }
             }
             
-            
             // get input answer from user
-            scanf("%d", &dInputAnswer);
+            scanf("%s", sInputAnswer);
             
-            // if correct answer, add 1 to score
-            switch (dInputAnswer)
+            if (strcmp(sInputAnswer, B->sCP_Answer) == 0)
             {
-                case 1:
-                    printf("You chose 1\n\n");
-                    if (strcmp(A[j].sChoice1, A[j].sAnswer) == 0)
-                    {
-                        B->nCP_Score++;
-                    }
-                    else
-                    {
-                        printf("Sorry, incorrect answer.\n\n");
-                    }
-                    
-                    for (i = 0; i < nQues; i++)
-                    {
-                        strcpy(sQuesArray[i], "");
-                    }
-                    break;
-                    
-                case 2:
-                    printf("You chose 2\n\n");
-                    if (strcmp(A[j].sChoice2, A[j].sAnswer) == 0)
-                    {
-                        B->nCP_Score++;
-                    }
-                    else
-                    {
-                        printf("Sorry, incorrect answer.\n\n");
-                    }
-                    for (i = 0; i < nQues; i++)
-                    {
-                        strcpy(sQuesArray[i], "");
-                    }
-                    break;
-                    
-                case 3:
-                    printf("You chose 3\n\n");
-                    if (strcmp(A[j].sChoice3, A[j].sAnswer) == 0)
-                    {
-                        B->nCP_Score++;
-                    }
-                    else
-                    {
-                        printf("Sorry, incorrect answer.\n\n");
-                    }
-                    for (i = 0; i < nQues; i++)
-                    {
-                        strcpy(sQuesArray[i], "");
-                    }
-                    break;
-                    
-                default:
-                    break;
+                B->nCP_Score++;
+            }
+            else
+            {
+                printf("Sorry, incorrect answer.\n\n");
+                printf("Correct: %s\n", B->sCP_Answer);
             }
         }
     }
