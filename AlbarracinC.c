@@ -634,7 +634,6 @@ int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s)
             }
             
             // get the question, choice1, choice2, choice3, and the answer
-            
             fgets(sfQuestion, Q_SIZE, fp);
             // remove newline copied by fgets
             sfQuestion[strlen(sfQuestion) - 1] = '\0';
@@ -814,84 +813,84 @@ void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int Asize)
     
     while (isPlaying)
     {
-        nQues = 0;
         
-        displayUniqTopics(A, Asize);
-        
-        printf("Enter the topic you want to focus on: ");
-        scanf("%s", sInputTopic);
-        
-        if (strcmp(sInputTopic, "0") == 0)
+        if (Asize == 1)
         {
+            printf("There are currently no records available to play.");
             isPlaying = 0;
         }
         else
         {
-            printf("You have selected : %s\n", sInputTopic);
             
-            // find
-            for (i = 0; i < (Asize - 1); i++)
+            nQues = 0;
+            
+            displayUniqTopics(A, Asize);
+            
+            
+            printf("Enter the topic you want to focus on: ");
+            scanf("%s", sInputTopic);
+            
+            if (strcmp(sInputTopic, "0") == 0)
             {
-                if (strcmp(A[i].sTopic, sInputTopic) == 0)
-                {
-                    strcpy(sQuesArray[nQues], A[i].sQuestion);
-                    nQues++;
-                }
-            }
-            
-            // use for debugging
-            /*
-             for (j = 0; j < nQues; j++)
-            {
-                printf("%s\n", sQuesArray[j]);
-            }
-             */
-            
-            // print current score
-            printf("Current Score: %d\n", B->nCP_Score);
-            
-            // randomize questions under the topic
-            srand(time(0));
-            int num = (rand() % nQues);
-            strcpy(B->sCP_Question, sQuesArray[num]);
-            printf("%d.) %s\n", num + 1, B->sCP_Question);
-            
-            // store answers and choices in currentplay array
-            for (j = 0; j < (Asize - 1); j++)
-            {
-                if (strcmp(B->sCP_Question, A[j].sQuestion) == 0)
-                {
-                    strcpy(B->sCP_Answer, A[j].sAnswer);
-                    strcpy(B->sCP_Choice1, A[j].sChoice1);
-                    strcpy(B->sCP_Choice2, A[j].sChoice2);
-                    strcpy(B->sCP_Choice3, A[j].sChoice3);
-                    
-                    // print choices
-                    printf("- %s\n", A[j].sChoice1);
-                    printf("- %s\n", A[j].sChoice2);
-                    printf("- %s\n\n", A[j].sChoice3);
-                }
-            }
-            
-            // get input answer from user
-            scanf("%s", sInputAnswer);
-            
-            if (strcmp(sInputAnswer, B->sCP_Answer) == 0)
-            {
-                B->nCP_Score++;
+                isPlaying = 0;
             }
             else
             {
-                printf("Sorry, incorrect answer.\n\n");
-                printf("Correct: %s\n", B->sCP_Answer);
+                printf("You have selected : %s\n", sInputTopic);
+                
+                // find
+                for (i = 0; i < (Asize - 1); i++)
+                {
+                    if (strcmp(A[i].sTopic, sInputTopic) == 0)
+                    {
+                        strcpy(sQuesArray[nQues], A[i].sQuestion);
+                        nQues++;
+                    }
+                }
+                
+                // print current score
+                printf("Current Score: %d\n", B->nCP_Score);
+                
+                // randomize questions under the topic
+                srand(time(0));
+                int num = (rand() % nQues);
+                strcpy(B->sCP_Question, sQuesArray[num]);
+                printf("%d.) %s\n", num + 1, B->sCP_Question);
+                
+                // store answers and choices in currentplay array
+                for (j = 0; j < (Asize - 1); j++)
+                {
+                    if (strcmp(B->sCP_Question, A[j].sQuestion) == 0)
+                    {
+                        strcpy(B->sCP_Answer, A[j].sAnswer);
+                        strcpy(B->sCP_Choice1, A[j].sChoice1);
+                        strcpy(B->sCP_Choice2, A[j].sChoice2);
+                        strcpy(B->sCP_Choice3, A[j].sChoice3);
+                        
+                        // print choices
+                        printf("- %s\n", A[j].sChoice1);
+                        printf("- %s\n", A[j].sChoice2);
+                        printf("- %s\n\n", A[j].sChoice3);
+                    }
+                }
+                
+                // get input answer from user
+                scanf("%s", sInputAnswer);
+                
+                if (strcmp(sInputAnswer, B->sCP_Answer) == 0)
+                {
+                    B->nCP_Score++;
+                }
+                else
+                {
+                    printf("Sorry, incorrect answer.\n\n");
+                    printf("Correct: %s\n", B->sCP_Answer);
+                }
             }
+            
+            printf("Total score: %d\n", B->nCP_Score);
         }
     }
-    
-    printf("Total score: %d\n", B->nCP_Score);
-    
-    // else if chosen option to end game, display a message together with the final accumulated score then go back to the menu
-    // else, display sorry + option to end game & call function playQuiz again
 }
 
 void viewScores()
@@ -948,8 +947,8 @@ int main()
     int nInput;
     bool bQuit = 0;
     struct RecordTag Records[REC_SIZE];
-    int size = 1;
     struct CurrentPlayTag Playing;
+    int size = 1;
     
     do
     {
