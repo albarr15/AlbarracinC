@@ -11,7 +11,7 @@
 #define REC_SIZE 50
 #define FN_SIZE 30
 
-struct Data
+struct RecordTag
 {
     char sTopic[TPC_SIZE];
     int nQNum;
@@ -36,19 +36,19 @@ struct CurrentPlayTag
 // function declarations
 void displayMenu();
 void displaymanageData();
-void displayRecord(struct Data A[], int i);
-void displayUniqTopics(struct Data A[], int s);
+void displayRecord(struct RecordTag A[], int i);
+void displayUniqTopics(struct RecordTag A[], int s);
 void getInput(char sentence[], int LEN);
 void askPassword(int * ptr_isValidPW);
-int * addRecord(struct Data * A, int * s);
-void editRecord(struct Data A[], int s);
-int * deleteRecord(struct Data * A, int * s);
-int * importData(struct Data A[], int * ptr_isValidFile, int * s);
-void exportData(struct Data A[], int s);
-void manageData(struct Data A[], int * s);
-void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize);
+int * addRecord(struct RecordTag * A, int * s);
+void editRecord(struct RecordTag A[], int s);
+int * deleteRecord(struct RecordTag * A, int * s);
+int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s);
+void exportData(struct RecordTag A[], int s);
+void manageData(struct RecordTag A[], int * s);
+void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int Asize);
 void viewScores();
-void Play(struct Data A[], struct CurrentPlayTag *B, int Asize);
+void Play(struct RecordTag A[], struct CurrentPlayTag *B, int Asize);
 
 
 /*
@@ -97,7 +97,7 @@ displaymanageData()
  @return <none>
  Pre-condition: Said record should already be existing either by importing data or adding a record
  */
-void displayRecord(struct Data A[], int i)
+void displayRecord(struct RecordTag A[], int i)
 {
     printf("Topic: %s\n", A[i].sTopic);
     printf("Question #: %d\n", A[i].nQNum);
@@ -114,7 +114,7 @@ void displayRecord(struct Data A[], int i)
  @return <none>
  Pre-condition: <none>
  */
-void displayUniqTopics(struct Data A[], int s)
+void displayUniqTopics(struct RecordTag A[], int s)
 {
     for (int i = 0; i < s; i++)
     {
@@ -253,7 +253,7 @@ void askPassword(int * ptr_isValidPW)
  @return s wherein s will be iterated by 1 if addition of record is successful
  Pre-condition: The answer to be inputted by the user must be the same as only one of Choice1, Choice2, or Choice3.
  */
-int * addRecord(struct Data A[], int * s)
+int * addRecord(struct RecordTag A[], int * s)
 {
     char inputQuestion[Q_SIZE];
     char inputAnswer[CA_SIZE];
@@ -344,7 +344,7 @@ int * addRecord(struct Data A[], int * s)
  @return <none>
  Pre-condition: When editing topic, the new topic must not be
  */
-void editRecord(struct Data A[], int s)
+void editRecord(struct RecordTag A[], int s)
 {
     char sInputTopic[TPC_SIZE];
     int nRecord;
@@ -484,7 +484,7 @@ void editRecord(struct Data A[], int s)
  @return s wherein s will be deducted by 1 if deletion of record is successful
  Pre-condition: <none>
  */
-int * deleteRecord(struct Data A[], int * s)
+int * deleteRecord(struct RecordTag A[], int * s)
 {
     char sInputTopic[TPC_SIZE];
     bool bValid = 0;
@@ -578,7 +578,7 @@ int * deleteRecord(struct Data A[], int * s)
  @return <none>
  Pre-condition: <none>
  */
-int * importData(struct Data A[], int * ptr_isValidFile, int * s)
+int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s)
 {
     // declare file pointer variable
     FILE * fp;
@@ -668,7 +668,7 @@ int * importData(struct Data A[], int * ptr_isValidFile, int * s)
  @return <none>
  Pre-condition: <none>
  */
-void exportData(struct Data A[], int s)
+void exportData(struct RecordTag A[], int s)
 {
     printf("Exporting data...\n");
     
@@ -712,7 +712,7 @@ void exportData(struct Data A[], int s)
     fclose(fp);
 }
 
-int * backMainMenu(struct Data A[], int * s)
+int * backMainMenu(struct RecordTag A[], int * s)
 {
     for (int i = 0; i < (*s - 1); i++)
     {
@@ -734,7 +734,7 @@ int * backMainMenu(struct Data A[], int * s)
  @return <none>
  Pre-condition: User has selected Manage Data from the Main Menu and has not yet opted to go back to Main Menu
  */
-void manageData(struct Data A[], int * s)
+void manageData(struct RecordTag A[], int * s)
 {
     int isValidPW = 0;
     int isValidFile = 0;
@@ -790,7 +790,7 @@ void manageData(struct Data A[], int * s)
     }
 }
 
-void playQuiz(struct Data A[], struct CurrentPlayTag *B, int Asize)
+void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int Asize)
 {
     char sInputTopic[TPC_SIZE];
     char sInputAnswer[CA_SIZE];
@@ -905,7 +905,7 @@ void viewScores()
  @return <none>
  Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
  */
-void Play(struct Data A[], struct CurrentPlayTag *B, int Asize)
+void Play(struct RecordTag A[], struct CurrentPlayTag *B, int Asize)
 {
     bool bQuit = 0;
     int nInput;
@@ -947,7 +947,7 @@ int main()
 {
     int nInput;
     bool bQuit = 0;
-    struct Data Records[REC_SIZE];
+    struct RecordTag Records[REC_SIZE];
     int size = 1;
     struct CurrentPlayTag Playing;
     
