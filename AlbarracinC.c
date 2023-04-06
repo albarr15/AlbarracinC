@@ -40,13 +40,13 @@ void displayRecord(struct RecordTag A[], int i);
 void displayUniqTopics(struct RecordTag A[], int s);
 void getInput(char sentence[], int LEN);
 void askPassword(int * ptr_isValidPW);
-int * addRecord(struct RecordTag * A, int * s);
+int * addRecord(struct RecordTag A[], int * s);
 void editRecord(struct RecordTag A[], int s);
-int * deleteRecord(struct RecordTag * A, int * s);
-int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s);
+int * deleteRecord(struct RecordTag A[], int * s);
+int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s, int isPlay);
 void exportData(struct RecordTag A[], int s);
 void manageData(struct RecordTag A[], int * s);
-void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int Asize);
+void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int * Asize);
 void viewScores();
 void Play(struct RecordTag A[], struct CurrentPlayTag *B, int Asize);
 
@@ -575,10 +575,11 @@ int * deleteRecord(struct RecordTag A[], int * s)
  @param A is an array of structures which stores the records
  *ptr_isValidFile points to the variable isValidFile
  *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ isPlay indicates whether or not the importData function is used in the Play part of the program or not
  @return <none>
  Pre-condition: <none>
  */
-int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s)
+int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s, int isPlay)
 {
     // declare file pointer variable
     FILE * fp;
@@ -595,9 +596,16 @@ int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s)
     int initialS = *s;
     int i = (*s - 1);
     
-    // ask user for filename
-    printf("Input the filename: ");
-    scanf("%s", sFilename);
+    if (isPlay)
+    {
+        strcpy(sFilename, "sample-records.txt");
+    }
+    else
+    {
+        // ask user for filename
+        printf("Input the filename: ");
+        scanf("%s", sFilename);
+    }
     
     // if user inputted 1
     if (strcmp(sFilename, "1") == 0)
@@ -612,7 +620,7 @@ int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s)
     {
         fprintf(stderr, "ERROR: %s does not exist.\n", sFilename);
         printf("[1] Go back to Manage Data Menu\n\n");
-        importData(A, ptr_isValidFile, s);
+        importData(A, ptr_isValidFile, s, 0);
     }
     // else, push through with importing data
     else
@@ -713,6 +721,8 @@ void exportData(struct RecordTag A[], int s)
 
 int * backMainMenu(struct RecordTag A[], int * s)
 {
+    printf("Going back to MAIN MENU...\n");
+    
     for (int i = 0; i < (*s - 1); i++)
     {
         strcpy((A[i]).sTopic, "");
@@ -768,7 +778,7 @@ void manageData(struct RecordTag A[], int * s)
                     break;
                     
                 case 4:
-                    *s = *importData(A, &isValidFile, s);
+                    *s = *importData(A, &isValidFile, s, 0);
                     break;
                     
                 case 5:
@@ -776,7 +786,6 @@ void manageData(struct RecordTag A[], int * s)
                     break;
                     
                 case 6:
-                    printf("Going back to MAIN MENU...\n");
                     *s = *backMainMenu(A, s);
                     bQuit = 1;
                     break;
@@ -789,13 +798,15 @@ void manageData(struct RecordTag A[], int * s)
     }
 }
 
-void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int Asize)
+void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int * Asize)
 {
     char sInputTopic[TPC_SIZE];
     char sInputAnswer[CA_SIZE];
     char sQuesArray[REC_SIZE][Q_SIZE];
     int i, j;
     bool isPlaying = 1;
+    int isValidFile = 0;
+    int isFound = 0;
     
     printf("Playing quiz...\n");
     
@@ -811,35 +822,51 @@ void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int Asize)
     // initialize score of player to zero
     B->nCP_Score = 0;
     
+    // import records data
+    *Asize = *importData(A, &isValidFile, Asize, 1);
+    
     while (isPlaying)
     {
-        
-        if (Asize == 1)
+        if (*Asize == 1)
         {
-            printf("There are currently no records available to play.");
+            printf("There are currently no records available to play.\n");
             isPlaying = 0;
         }
         else
         {
-            
             nQues = 0;
             
-            displayUniqTopics(A, Asize);
-            
+            displayUniqTopics(A, *Asize);
             
             printf("Enter the topic you want to focus on: ");
             scanf("%s", sInputTopic);
+            
             
             if (strcmp(sInputTopic, "0") == 0)
             {
                 isPlaying = 0;
             }
-            else
+            else if (!isFound)
+            {
+                for (i = 0; (i < (*Asize - 1)) && (!isFound); i++)
+                {
+                    if (strcmp(sInputTopic, A[i].sTopic) == 0)
+                    {
+                        isFound = 1;
+                    }
+                }
+                
+                if (!isFound)
+                {
+                    printf("There are no topics with the name: %s\n", sInputTopic);
+                }
+            }
+            if (isFound)
             {
                 printf("You have selected : %s\n", sInputTopic);
                 
                 // find
-                for (i = 0; i < (Asize - 1); i++)
+                for (i = 0; i < (*Asize - 1); i++)
                 {
                     if (strcmp(A[i].sTopic, sInputTopic) == 0)
                     {
@@ -858,7 +885,7 @@ void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int Asize)
                 printf("%d.) %s\n", num + 1, B->sCP_Question);
                 
                 // store answers and choices in currentplay array
-                for (j = 0; j < (Asize - 1); j++)
+                for (j = 0; j < (*Asize - 1); j++)
                 {
                     if (strcmp(B->sCP_Question, A[j].sQuestion) == 0)
                     {
@@ -887,10 +914,10 @@ void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int Asize)
                     printf("Correct: %s\n", B->sCP_Answer);
                 }
             }
-            
             printf("Total score: %d\n", B->nCP_Score);
         }
     }
+    *Asize = *backMainMenu(A, Asize);
 }
 
 void viewScores()
@@ -923,7 +950,7 @@ void Play(struct RecordTag A[], struct CurrentPlayTag *B, int Asize)
         switch (nInput)
         {
             case 1:
-                playQuiz(A, B, Asize);
+                playQuiz(A, B, &Asize);
                 break;
                 
             case 2:
