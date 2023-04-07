@@ -891,7 +891,7 @@ void playQuiz(struct RecordTag Record[], struct CurrentPlayTag *B, int * Asize)
                 }
                 else
                 {
-                    printf("Sorry, incorrect answer.\n\n");
+                    printf("Sorry, incorrect answer. | ");
                     printf("Correct: %s\n", B->sCP_Answer);
                 }
             }
