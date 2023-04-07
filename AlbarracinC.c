@@ -127,6 +127,10 @@ void displayUniqTopics(struct RecordTag Record[], int s)
     }
 }
 
+/* displayScores shows all current scores inside the file "score.txt"
+ @return <none>
+ Pre-condition: score.txt is existing
+ */
 void displayScores()
 {
     int nRow = 1;
@@ -152,8 +156,15 @@ void displayScores()
         printf("%s\t\t", sfName);
         // get score
         fscanf(fp, "%d\n", &nfScore);
-        printf("%d\t\n\n", nfScore);
+        printf("%d\t\n", nfScore);
     }
+    
+    if (strcmp(sfName, "") == 0)
+    {
+        printf("There are currently no scores available.\n");
+    }
+    
+    printf("\n");
     
     fclose(fp);
 }
