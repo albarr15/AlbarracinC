@@ -36,19 +36,19 @@ struct CurrentPlayTag
 // function declarations
 void displayMenu();
 void displaymanageData();
-void displayRecord(struct RecordTag A[], int i);
-void displayUniqTopics(struct RecordTag A[], int s);
+void displayRecord(struct RecordTag Record[], int i);
+void displayUniqTopics(struct RecordTag Record[], int s);
 void getInput(char sentence[], int LEN);
 void askPassword(int * ptr_isValidPW);
-int * addRecord(struct RecordTag A[], int * s);
-void editRecord(struct RecordTag A[], int s);
-int * deleteRecord(struct RecordTag A[], int * s);
-int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s, int isPlay);
-void exportData(struct RecordTag A[], int s);
-void manageData(struct RecordTag A[], int * s);
-void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int * Asize);
+int * addRecord(struct RecordTag Record[], int * s);
+void editRecord(struct RecordTag Record[], int s);
+int * deleteRecord(struct RecordTag Record[], int * s);
+int * importData(struct RecordTag Record[], int * ptr_isValidFile, int * s, int isPlay);
+void exportData(struct RecordTag Record[], int s);
+void manageData(struct RecordTag Record[], int * s);
+void playQuiz(struct RecordTag Record[], struct CurrentPlayTag *B, int * Asize);
 void viewScores();
-void Play(struct RecordTag A[], struct CurrentPlayTag *B, int Asize);
+void Play(struct RecordTag Record[], struct CurrentPlayTag *B, int Asize);
 
 
 /*
@@ -91,38 +91,38 @@ displaymanageData()
     printf("[6] Go back to MAIN MENU\n");
 }
 
-/* displayRecord shows the record with index i's topic, question number, question, choice 1, 2, and 3, as well as the answer
- @param A is an array of structures which stores the records
+/* displayRecord shows the record with the index i's topic, question number, question, choice 1, 2, and 3, as well as the answer
+ @param Record is an array of structures which stores the records
  i is the index of the array which will be displayed
  @return <none>
  Pre-condition: Said record should already be existing either by importing data or adding a record
  */
-void displayRecord(struct RecordTag A[], int i)
+void displayRecord(struct RecordTag Record[], int i)
 {
-    printf("Topic: %s\n", A[i].sTopic);
-    printf("Question #: %d\n", A[i].nQNum);
-    printf("Question: %s\n", A[i].sQuestion);
-    printf("Choice 1: %s\n", A[i].sChoice1);
-    printf("Choice 2: %s\n", A[i].sChoice2);
-    printf("Choice 3: %s\n", A[i].sChoice3);
-    printf("Answer: %s\n", A[i].sAnswer);
+    printf("Topic: %s\n", Record[i].sTopic);
+    printf("Question #: %d\n", Record[i].nQNum);
+    printf("Question: %s\n", Record[i].sQuestion);
+    printf("Choice 1: %s\n", Record[i].sChoice1);
+    printf("Choice 2: %s\n", Record[i].sChoice2);
+    printf("Choice 3: %s\n", Record[i].sChoice3);
+    printf("Answer: %s\n", Record[i].sAnswer);
 }
 
 /* displayUniqTopics shows all current records without duplicates
- @param A is an array of structures which stores the records
+ @param Record is an array of structures which stores the records
  i is the index of the array which will be displayed
  @return <none>
  Pre-condition: <none>
  */
-void displayUniqTopics(struct RecordTag A[], int s)
+void displayUniqTopics(struct RecordTag Record[], int s)
 {
     for (int i = 0; i < s; i++)
     {
         // if the record with the index i has a question number 1 (meaning it is the first question for the given topic)
-        if (A[i].nQNum == 1)
+        if (Record[i].nQNum == 1)
         {
             // print topic
-            printf("%s\n", A[i].sTopic);
+            printf("%s\n", Record[i].sTopic);
         }
     }
 }
@@ -248,12 +248,12 @@ void askPassword(int * ptr_isValidPW)
 
 /*
  addRecord allows the admin to create a new record given that the question and answer are not yet existing
- @param A is an array of structures which stores the records
- *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ @param Record is an array of structures which stores the records
+ *s is a pointer to the variable s which indicates the current number of non-empty elements of the array Record
  @return s wherein s will be iterated by 1 if addition of record is successful
  Pre-condition: The answer to be inputted by the user must be the same as only one of Choice1, Choice2, or Choice3.
  */
-int * addRecord(struct RecordTag A[], int * s)
+int * addRecord(struct RecordTag Record[], int * s)
 {
     char inputQuestion[Q_SIZE];
     char inputAnswer[CA_SIZE];
@@ -280,12 +280,12 @@ int * addRecord(struct RecordTag A[], int * s)
     // check if inputted Q&A are already listed in the records
     for (int i = 0; (i < *s) && (!bRecorded); i++)
     {
-        if ((strcmp(A[i].sQuestion, inputQuestion) == 0) && (strcmp(A[i].sAnswer, inputAnswer) == 0))
+        if ((strcmp(Record[i].sQuestion, inputQuestion) == 0) && (strcmp(Record[i].sAnswer, inputAnswer) == 0))
         {
             printf("Record already listed.\n");
             
             // print record
-            displayRecord(A, i);
+            displayRecord(Record, i);
             
             bRecorded = 1;
         }
@@ -295,18 +295,18 @@ int * addRecord(struct RecordTag A[], int * s)
     if (!bRecorded)
     {
         // add the inputted Q&A to the records
-        strcpy(A[last_index].sQuestion, inputQuestion);
-        strcpy(A[last_index].sAnswer, inputAnswer);
+        strcpy(Record[last_index].sQuestion, inputQuestion);
+        strcpy(Record[last_index].sAnswer, inputAnswer);
         
         // ask user for input on the record's topic, choice 1, choice 2, and choice 3
         printf("Topic: ");
-        scanf("%s", A[last_index].sTopic);
+        scanf("%s", Record[last_index].sTopic);
         printf("Choice 1: ");
-        scanf("%s", A[last_index].sChoice1);
+        scanf("%s", Record[last_index].sChoice1);
         printf("Choice 2: ");
-        scanf("%s", A[last_index].sChoice2);
+        scanf("%s", Record[last_index].sChoice2);
         printf("Choice 3: ");
-        scanf("%s", A[last_index].sChoice3);
+        scanf("%s", Record[last_index].sChoice3);
         
         // check if the inputted topic is already existing (the number of existing questions with the same topic will be used to define nQnum of the added record)
         for (int j = 0; (j < *s); j++)
@@ -314,7 +314,7 @@ int * addRecord(struct RecordTag A[], int * s)
             // do not include j is at the last_index
             if (j != last_index)
             {
-                if (strcmp(A[last_index].sTopic, A[j].sTopic) == 0)
+                if (strcmp(Record[last_index].sTopic, Record[j].sTopic) == 0)
                 {
                     nExistingTopic++;
                 }
@@ -322,29 +322,29 @@ int * addRecord(struct RecordTag A[], int * s)
         }
         
         // assign nQNum
-        A[last_index].nQNum = nExistingTopic;
+        Record[last_index].nQNum = nExistingTopic;
         
         printf("Added successfully: ");
-        printf("%s, %d, %s, %s, %s, %s, %s\n\n", A[last_index].sTopic, A[last_index].nQNum, A[last_index].sQuestion, A[last_index].sChoice1, A[last_index].sChoice2, A[last_index].sChoice3, A[last_index].sAnswer);
+        printf("%s, %d, %s, %s, %s, %s, %s\n\n", Record[last_index].sTopic, Record[last_index].nQNum, Record[last_index].sQuestion, Record[last_index].sChoice1, Record[last_index].sChoice2, Record[last_index].sChoice3, Record[last_index].sAnswer);
         
         // add 1 to current struct array size
         *s = (*s + 1);
     }
     
     // remove last newline character scanned from text file
-    A[(*s - 1)].sTopic[0] = '\0';
+    Record[(*s - 1)].sTopic[0] = '\0';
     
     return s;
 }
 
 /*
  editRecord allows the admin to edit a field in an existing record\
- @param A is an array of structures which stores the records
- s indicates the current number of non-empty elements of the array A
+ @param Record is an array of structures which stores the records
+ s indicates the current number of non-empty elements of the array Record
  @return <none>
  Pre-condition: When editing topic, the new topic must not be
  */
-void editRecord(struct RecordTag A[], int s)
+void editRecord(struct RecordTag Record[], int s)
 {
     char sInputTopic[TPC_SIZE];
     int nRecord;
@@ -355,7 +355,7 @@ void editRecord(struct RecordTag A[], int s)
     
     printf("Editing a record...\n");
     
-    displayUniqTopics(A, s);
+    displayUniqTopics(Record, s);
     
     printf("Enter the topic you want to edit: ");
     scanf("%s", sInputTopic);
@@ -364,9 +364,9 @@ void editRecord(struct RecordTag A[], int s)
     for (int i = 0; i < s; i++)
     {
         // print and indicate that inputted topic is existing in the records
-        if (strcmp(A[i].sTopic, sInputTopic) == 0)
+        if (strcmp(Record[i].sTopic, sInputTopic) == 0)
         {
-            printf("[%d] %s\n", A[i].nQNum, A[i].sQuestion);
+            printf("[%d] %s\n", Record[i].nQNum, Record[i].sQuestion);
             bValid = 1;
         }
     }
@@ -389,7 +389,7 @@ void editRecord(struct RecordTag A[], int s)
         // find the index of the selected record
         for (int j = 0; j < s; j++)
         {
-            if ((strcmp(A[j].sTopic, sInputTopic) == 0) && (A[j].nQNum == nRecord))
+            if ((strcmp(Record[j].sTopic, sInputTopic) == 0) && (Record[j].nQNum == nRecord))
             {
                 nIndex = j;
             }
@@ -397,7 +397,7 @@ void editRecord(struct RecordTag A[], int s)
         
         printf("\n");
         // display the current record to help guide user
-        displayRecord(A, nIndex);
+        displayRecord(Record, nIndex);
         
         printf("\nWhat field would you like to modify?\n");
         printf("[1] Topic\n");
@@ -416,15 +416,15 @@ void editRecord(struct RecordTag A[], int s)
                 {
                     if (j != nIndex)
                     {
-                        if ((strcmp(A[nIndex].sTopic, A[j].sTopic) == 0) && (A[nIndex].nQNum < A[j].nQNum))
+                        if ((strcmp(Record[nIndex].sTopic, Record[j].sTopic) == 0) && (Record[nIndex].nQNum < Record[j].nQNum))
                         {
-                            A[j].nQNum = A[j].nQNum - 1;
+                            Record[j].nQNum = Record[j].nQNum - 1;
                         }
                     }
                 }
                 
                 printf("Enter new topic: ");
-                scanf("%s", A[nIndex].sTopic);
+                scanf("%s", Record[nIndex].sTopic);
                 
                 // check if the modified topic is already existing (the number of existing questions with the same topic will be used to define nQnum of the added record)
                 for (int k = 0; (k < s); k++)
@@ -432,7 +432,7 @@ void editRecord(struct RecordTag A[], int s)
                     if (k != nIndex)
                     {
                         // do not include j is at the last_index
-                        if (strcmp(A[nIndex].sTopic, A[k].sTopic) == 0)
+                        if (strcmp(Record[nIndex].sTopic, Record[k].sTopic) == 0)
                         {
                             nExistingTopic++;
                         }
@@ -440,32 +440,32 @@ void editRecord(struct RecordTag A[], int s)
                 }
                 
                 // assign nQNum
-                A[nIndex].nQNum = nExistingTopic;
+                Record[nIndex].nQNum = nExistingTopic;
                 break;
                 
             case 2:
                 printf("Enter new question: ");
-                getInput(A[nIndex].sQuestion, Q_SIZE);
+                getInput(Record[nIndex].sQuestion, Q_SIZE);
                 break;
                 
             case 3:
                 printf("Enter new choice 1: ");
-                scanf("%s", A[nIndex].sChoice1);
+                scanf("%s", Record[nIndex].sChoice1);
                 break;
                 
             case 4:
                 printf("Enter new choice 2: ");
-                scanf("%s", A[nIndex].sChoice2);
+                scanf("%s", Record[nIndex].sChoice2);
                 break;
                 
             case 5:
                 printf("Enter new choice 3: ");
-                scanf("%s", A[nIndex].sChoice3);
+                scanf("%s", Record[nIndex].sChoice3);
                 break;
                 
             case 6:
                 printf("Enter new answer: ");
-                scanf("%s", A[nIndex].sAnswer);
+                scanf("%s", Record[nIndex].sAnswer);
                 break;
                 
             default:
@@ -473,18 +473,18 @@ void editRecord(struct RecordTag A[], int s)
         }
         
         printf("\n[1] Go back to Main Menu\n\n");
-        editRecord(A, s);
+        editRecord(Record, s);
     }
 }
 
 /*
  deleteRecord allows the admin to remove a selected record
- @param A is an array of structures which stores the records
- *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ @param Record is an array of structures which stores the records
+ *s is a pointer to the variable s which indicates the current number of non-empty elements of the array Record
  @return s wherein s will be deducted by 1 if deletion of record is successful
  Pre-condition: <none>
  */
-int * deleteRecord(struct RecordTag A[], int * s)
+int * deleteRecord(struct RecordTag Record[], int * s)
 {
     char sInputTopic[TPC_SIZE];
     bool bValid = 0;
@@ -497,7 +497,7 @@ int * deleteRecord(struct RecordTag A[], int * s)
     printf("Deleting a record...\n");
     
     // display unique topics
-    displayUniqTopics(A, *s);
+    displayUniqTopics(Record, *s);
     
     printf("Enter the topic you want to delete: ");
     scanf("%s", sInputTopic);
@@ -506,9 +506,9 @@ int * deleteRecord(struct RecordTag A[], int * s)
     for (i = 0; i < *s; i++)
     {
         // print and indicate that inputted topic is existing in the records
-        if (strcmp(A[i].sTopic, sInputTopic) == 0)
+        if (strcmp(Record[i].sTopic, sInputTopic) == 0)
         {
-            printf("[%d] %s\n", A[i].nQNum, A[i].sQuestion);
+            printf("[%d] %s\n", Record[i].nQNum, Record[i].sQuestion);
             bValid = 1;
         }
     }
@@ -531,7 +531,7 @@ int * deleteRecord(struct RecordTag A[], int * s)
         // find the index of the selected record
         for (int j = 0; j < *s; j++)
         {
-            if ((strcmp(A[j].sTopic, sInputTopic) == 0) && (A[j].nQNum == nRecord))
+            if ((strcmp(Record[j].sTopic, sInputTopic) == 0) && (Record[j].nQNum == nRecord))
             {
                 nIndex = j;
             }
@@ -539,7 +539,7 @@ int * deleteRecord(struct RecordTag A[], int * s)
         
         printf("\n");
         // display the current record to help guide user
-        displayRecord(A, nIndex);
+        displayRecord(Record, nIndex);
         
         printf("Are you sure you want to delete the record? (y/n)\n");
         scanf("%c", &temp);
@@ -550,19 +550,19 @@ int * deleteRecord(struct RecordTag A[], int * s)
             // re-adjust array values to compensate from deleted index
             for (int pos = nIndex; pos < (*s - 1); pos++)
             {
-                strcpy(A[pos].sTopic, A[pos + 1].sTopic);
+                strcpy(Record[pos].sTopic, Record[pos + 1].sTopic);
                 
                 // adjust question number for those under the same topic
-                if ((strcmp(A[pos].sTopic, A[pos + 1].sTopic) == 0) && (A[pos].nQNum < A[pos + 1].nQNum))
+                if ((strcmp(Record[pos].sTopic, Record[pos + 1].sTopic) == 0) && (Record[pos].nQNum < Record[pos + 1].nQNum))
                 {
-                    A[pos].nQNum = (A[pos + 1].nQNum - 1);
+                    Record[pos].nQNum = (Record[pos + 1].nQNum - 1);
                 }
                 
-                strcpy(A[pos].sQuestion, A[pos + 1].sQuestion);
-                strcpy(A[pos].sChoice1, A[pos + 1].sChoice1);
-                strcpy(A[pos].sChoice2, A[pos + 1].sChoice2);
-                strcpy(A[pos].sChoice3, A[pos + 1].sChoice3);
-                strcpy(A[pos].sAnswer, A[pos + 1].sAnswer);
+                strcpy(Record[pos].sQuestion, Record[pos + 1].sQuestion);
+                strcpy(Record[pos].sChoice1, Record[pos + 1].sChoice1);
+                strcpy(Record[pos].sChoice2, Record[pos + 1].sChoice2);
+                strcpy(Record[pos].sChoice3, Record[pos + 1].sChoice3);
+                strcpy(Record[pos].sAnswer, Record[pos + 1].sAnswer);
             }
             *s = (*s - 1);
         }
@@ -572,14 +572,14 @@ int * deleteRecord(struct RecordTag A[], int * s)
 
 /*
  importData allows the admin to store the data from a text file to the program's records
- @param A is an array of structures which stores the records
+ @param Record is an array of structures which stores the records
  *ptr_isValidFile points to the variable isValidFile
- *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ *s is a pointer to the variable s which indicates the current number of non-empty elements of the array Record
  isPlay indicates whether or not the importData function is used in the Play part of the program or not
  @return <none>
  Pre-condition: <none>
  */
-int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s, int isPlay)
+int * importData(struct RecordTag Record[], int * ptr_isValidFile, int * s, int isPlay)
 {
     // declare file pointer variable
     FILE * fp;
@@ -620,7 +620,7 @@ int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s, int isPla
     {
         fprintf(stderr, "ERROR: %s does not exist.\n", sFilename);
         printf("[1] Go back to Manage Data Menu\n\n");
-        importData(A, ptr_isValidFile, s, 0);
+        importData(Record, ptr_isValidFile, s, 0);
     }
     // else, push through with importing data
     else
@@ -635,7 +635,7 @@ int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s, int isPla
             // add 1 to the scanned question number everytime there is a record with the same topic in the current record list
             for (int i = 0; (i < (initialS - 1)); i++)
             {
-                if ((strcmp(A[i].sTopic, sfTopic) == 0))
+                if ((strcmp(Record[i].sTopic, sfTopic) == 0))
                 {
                     nfQNum++;
                 }
@@ -647,13 +647,13 @@ int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s, int isPla
             sfQuestion[strlen(sfQuestion) - 1] = '\0';
             
             // store data to program's record list
-            strcpy(A[i].sTopic, sfTopic);
-            A[i].nQNum = nfQNum;
-            strcpy(A[i].sQuestion, sfQuestion);
-            fscanf(fp, "%s\n", A[i].sChoice1);
-            fscanf(fp, "%s\n", A[i].sChoice2);
-            fscanf(fp, "%s\n", A[i].sChoice3);
-            fscanf(fp, "%s\n", A[i].sAnswer);
+            strcpy(Record[i].sTopic, sfTopic);
+            Record[i].nQNum = nfQNum;
+            strcpy(Record[i].sQuestion, sfQuestion);
+            fscanf(fp, "%s\n", Record[i].sChoice1);
+            fscanf(fp, "%s\n", Record[i].sChoice2);
+            fscanf(fp, "%s\n", Record[i].sChoice3);
+            fscanf(fp, "%s\n", Record[i].sAnswer);
             
             *s = (*s + 1);
             // iterate
@@ -661,7 +661,7 @@ int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s, int isPla
             
             // FOR DEBUGGING ONLY
             /*
-             printf("%s\n%d\n%s\n%s\n%s\n%s\n%s\n\n", A[i].sTopic, A[i].nQNum, A[i].sQuestion, A[i].sChoice1, A[i].sChoice2, A[i].sChoice3, A[i].sAnswer);
+             printf("%s\n%d\n%s\n%s\n%s\n%s\n%s\n\n", Record[i].sTopic, Record[i].nQNum, Record[i].sQuestion, Record[i].sChoice1, Record[i].sChoice2, Record[i].sChoice3, Record[i].sAnswer);
              */
         }
     }
@@ -670,12 +670,12 @@ int * importData(struct RecordTag A[], int * ptr_isValidFile, int * s, int isPla
 
 /*
  exportData allows the admin to store the data from the program's records to a file
- @param A is an array of structures which stores the records
- s indicates the current number of non-empty elements of the array A
+ @param Record is an array of structures which stores the records
+ s indicates the current number of non-empty elements of the array Record
  @return <none>
  Pre-condition: <none>
  */
-void exportData(struct RecordTag A[], int s)
+void exportData(struct RecordTag Record[], int s)
 {
     printf("Exporting data...\n");
     
@@ -694,7 +694,7 @@ void exportData(struct RecordTag A[], int s)
     // open file named sFilename in writing mode
     fp = fopen(sFilename, "w");
     
-    // iterate over all elements of array A unless it is at the end of file
+    // iterate over all elements of array Record unless it is at the end of file
     for (int i = 0; (i < (s - 1)) && (bKeep_Reading); i++)
     {
         if (feof(fp))
@@ -705,13 +705,13 @@ void exportData(struct RecordTag A[], int s)
         else
         {
             // print all information
-            fprintf(fp, "%s\n", A[i].sTopic);
-            fprintf(fp, "%d\n", A[i].nQNum);
-            fprintf(fp, "%s\n", A[i].sQuestion);
-            fprintf(fp, "%s\n", A[i].sChoice1);
-            fprintf(fp, "%s\n", A[i].sChoice2);
-            fprintf(fp, "%s\n", A[i].sChoice3);
-            fprintf(fp, "%s\n\n", A[i].sAnswer);
+            fprintf(fp, "%s\n", Record[i].sTopic);
+            fprintf(fp, "%d\n", Record[i].nQNum);
+            fprintf(fp, "%s\n", Record[i].sQuestion);
+            fprintf(fp, "%s\n", Record[i].sChoice1);
+            fprintf(fp, "%s\n", Record[i].sChoice2);
+            fprintf(fp, "%s\n", Record[i].sChoice3);
+            fprintf(fp, "%s\n\n", Record[i].sAnswer);
         }
     }
     
@@ -719,18 +719,18 @@ void exportData(struct RecordTag A[], int s)
     fclose(fp);
 }
 
-int * backMainMenu(struct RecordTag A[], int * s)
+int * backMainMenu(struct RecordTag Record[], int * s)
 {
     printf("Going back to MAIN MENU...\n");
     
     for (int i = 0; i < (*s - 1); i++)
     {
-        strcpy((A[i]).sTopic, "");
-        (A[i]).nQNum = 0;
-        strcpy((A[i]).sChoice1, "");
-        strcpy((A[i]).sChoice2, "");
-        strcpy((A[i]).sChoice3, "");
-        strcpy((A[i]).sAnswer, "");
+        strcpy((Record[i]).sTopic, "");
+        (Record[i]).nQNum = 0;
+        strcpy((Record[i]).sChoice1, "");
+        strcpy((Record[i]).sChoice2, "");
+        strcpy((Record[i]).sChoice3, "");
+        strcpy((Record[i]).sAnswer, "");
     }
     
     *s = 1;
@@ -738,12 +738,12 @@ int * backMainMenu(struct RecordTag A[], int * s)
 }
 
 /* manageData allows the admin to add, edit, delete records, as well as import and export data after inputting the correct admin password
- @param A is an array of structures which stores the records
- *s is a pointer to the variable s which indicates the current number of non-empty elements of the array A
+ @param Record is an array of structures which stores the records
+ *s is a pointer to the variable s which indicates the current number of non-empty elements of the array Record
  @return <none>
  Pre-condition: User has selected Manage Data from the Main Menu and has not yet opted to go back to Main Menu
  */
-void manageData(struct RecordTag A[], int * s)
+void manageData(struct RecordTag Record[], int * s)
 {
     int isValidPW = 0;
     int isValidFile = 0;
@@ -766,27 +766,27 @@ void manageData(struct RecordTag A[], int * s)
             switch (nInput)
             {
                 case 1:
-                    *s = *addRecord(A, s);
+                    *s = *addRecord(Record, s);
                     break;
                     
                 case 2:
-                    editRecord(A, *s);
+                    editRecord(Record, *s);
                     break;
                     
                 case 3:
-                    *s = *deleteRecord(A, s);
+                    *s = *deleteRecord(Record, s);
                     break;
                     
                 case 4:
-                    *s = *importData(A, &isValidFile, s, 0);
+                    *s = *importData(Record, &isValidFile, s, 0);
                     break;
                     
                 case 5:
-                    exportData(A, *s);
+                    exportData(Record, *s);
                     break;
                     
                 case 6:
-                    *s = *backMainMenu(A, s);
+                    *s = *backMainMenu(Record, s);
                     bQuit = 1;
                     break;
                     
@@ -798,7 +798,7 @@ void manageData(struct RecordTag A[], int * s)
     }
 }
 
-void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int * Asize)
+void playQuiz(struct RecordTag Record[], struct CurrentPlayTag *B, int * Asize)
 {
     char sInputTopic[TPC_SIZE];
     char sInputAnswer[CA_SIZE];
@@ -823,7 +823,7 @@ void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int * Asize)
     B->nCP_Score = 0;
     
     // import records data
-    *Asize = *importData(A, &isValidFile, Asize, 1);
+    *Asize = *importData(Record, &isValidFile, Asize, 1);
     
     while (isPlaying)
     {
@@ -836,7 +836,7 @@ void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int * Asize)
         {
             nQues = 0;
             
-            displayUniqTopics(A, *Asize);
+            displayUniqTopics(Record, *Asize);
             
             printf("Enter the topic you want to focus on: ");
             scanf("%s", sInputTopic);
@@ -850,7 +850,7 @@ void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int * Asize)
             {
                 for (i = 0; (i < (*Asize - 1)) && (!isFound); i++)
                 {
-                    if (strcmp(sInputTopic, A[i].sTopic) == 0)
+                    if (strcmp(sInputTopic, Record[i].sTopic) == 0)
                     {
                         isFound = 1;
                     }
@@ -868,9 +868,9 @@ void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int * Asize)
                 // find
                 for (i = 0; i < (*Asize - 1); i++)
                 {
-                    if (strcmp(A[i].sTopic, sInputTopic) == 0)
+                    if (strcmp(Record[i].sTopic, sInputTopic) == 0)
                     {
-                        strcpy(sQuesArray[nQues], A[i].sQuestion);
+                        strcpy(sQuesArray[nQues], Record[i].sQuestion);
                         nQues++;
                     }
                 }
@@ -887,17 +887,17 @@ void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int * Asize)
                 // store answers and choices in currentplay array
                 for (j = 0; j < (*Asize - 1); j++)
                 {
-                    if (strcmp(B->sCP_Question, A[j].sQuestion) == 0)
+                    if (strcmp(B->sCP_Question, Record[j].sQuestion) == 0)
                     {
-                        strcpy(B->sCP_Answer, A[j].sAnswer);
-                        strcpy(B->sCP_Choice1, A[j].sChoice1);
-                        strcpy(B->sCP_Choice2, A[j].sChoice2);
-                        strcpy(B->sCP_Choice3, A[j].sChoice3);
+                        strcpy(B->sCP_Answer, Record[j].sAnswer);
+                        strcpy(B->sCP_Choice1, Record[j].sChoice1);
+                        strcpy(B->sCP_Choice2, Record[j].sChoice2);
+                        strcpy(B->sCP_Choice3, Record[j].sChoice3);
                         
                         // print choices
-                        printf("- %s\n", A[j].sChoice1);
-                        printf("- %s\n", A[j].sChoice2);
-                        printf("- %s\n\n", A[j].sChoice3);
+                        printf("- %s\n", Record[j].sChoice1);
+                        printf("- %s\n", Record[j].sChoice2);
+                        printf("- %s\n\n", Record[j].sChoice3);
                     }
                 }
                 
@@ -917,7 +917,7 @@ void playQuiz(struct RecordTag A[], struct CurrentPlayTag *B, int * Asize)
             printf("Total score: %d\n", B->nCP_Score);
         }
     }
-    *Asize = *backMainMenu(A, Asize);
+    *Asize = *backMainMenu(Record, Asize);
 }
 
 void viewScores()
@@ -931,7 +931,7 @@ void viewScores()
  @return <none>
  Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
  */
-void Play(struct RecordTag A[], struct CurrentPlayTag *B, int Asize)
+void Play(struct RecordTag Record[], struct CurrentPlayTag *B, int Asize)
 {
     bool bQuit = 0;
     int nInput;
@@ -950,7 +950,7 @@ void Play(struct RecordTag A[], struct CurrentPlayTag *B, int Asize)
         switch (nInput)
         {
             case 1:
-                playQuiz(A, B, &Asize);
+                playQuiz(Record, B, &Asize);
                 break;
                 
             case 2:
