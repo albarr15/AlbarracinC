@@ -127,48 +127,6 @@ void displayUniqTopics(struct RecordTag Record[], int s)
     }
 }
 
-/* displayScores shows all current scores inside the file "score.txt"
- @return <none>
- Pre-condition: score.txt is existing
- */
-void displayScores()
-{
-    int nRow = 1;
-    // declare file pointer variable
-    FILE * fp;
-    
-    fp = fopen("score.txt", "r");
-    
-    // declare temporary variables for scanned names and scores from text file
-    char sfName[51];
-    int nfScore;
-    
-    printf("Reading scores from file ...\n");
-    
-    printf("Row #\t");
-    printf("Player Name\t");
-    printf("Score\t\n");
-    
-    while ((fscanf(fp, "%s\n", sfName) == 1) && (!feof(fp)))
-    {
-        printf("%d\t", nRow);
-        nRow++;
-        printf("%s\t\t", sfName);
-        // get score
-        fscanf(fp, "%d\n", &nfScore);
-        printf("%d\t\n", nfScore);
-    }
-    
-    if (strcmp(sfName, "") == 0)
-    {
-        printf("There are currently no scores available.\n");
-    }
-    
-    printf("\n");
-    
-    fclose(fp);
-}
-
 /*
  getInput allows for sentence inputs wherein all characters before the newline character is stored in the array
  @param sentence is a string where all characters before newline is stored
@@ -200,7 +158,6 @@ void getInput(char sentence[], int LEN)
 
 /*
  askPassword requires the admin to user the correct admin password as well as masks the password with asterisks while it is being typed for additional security
- @param isValidPW is an integer variable where the validity of the password input is stored
  *ptr_isValidPW is a pointer to the variable 'isValidPW' in order for the manageData to check the validity of the password
  @return <none>
  Pre-condition: User has selected Manage Data from the menu, user cannot backspace or add spaces when entering the password
@@ -258,7 +215,7 @@ void askPassword(int * ptr_isValidPW)
 }
 
 /*
- addRecord allows the admin to create a new record given that the question and answer are not yet existing
+ addRecord allows the admin to create a new record given that the question and answer are not yet existing (If it is existing, there will be a message displayed to inform admin)
  @param Record is an array of structures which stores the records
  *s is a pointer to the variable s which indicates the current number of non-empty elements of the array Record
  @return s wherein s will be iterated by 1 if addition of record is successful
@@ -349,11 +306,11 @@ int * addRecord(struct RecordTag Record[], int * s)
 }
 
 /*
- editRecord allows the admin to edit a field in an existing record\
+ editRecord allows the admin to edit a field in an existing record
  @param Record is an array of structures which stores the records
  s indicates the current number of non-empty elements of the array Record
  @return <none>
- Pre-condition: When editing topic, the new topic must not be
+ Pre-condition: When editing topic, the new topic must not be the same as existing ones
  */
 void editRecord(struct RecordTag Record[], int s)
 {
@@ -730,6 +687,13 @@ void exportData(struct RecordTag Record[], int s)
     fclose(fp);
 }
 
+/*
+ backMainMenu allows the admin to go back to main menu
+ @param Record is an array of structures which stores the records
+ s indicates the current number of non-empty elements of the array Record
+ @return <none>
+ Pre-condition: <none>
+ */
 int * backMainMenu(struct RecordTag Record[], int * s)
 {
     printf("Going back to MAIN MENU...\n");
@@ -809,6 +773,12 @@ void manageData(struct RecordTag Record[], int * s)
     }
 }
 
+/* playQuiz allows the user to play the quiz game which contains all records that have been exported
+ @param Record is an array of structures which stores the records
+ *s is a pointer to the variable s which indicates the current number of non-empty elements of the array Record
+ @return <none>
+ Pre-condition: <none>
+ */
 void playQuiz(struct RecordTag Record[], struct CurrentPlayTag *B, int * Asize)
 {
     char sInputTopic[TPC_SIZE];
@@ -931,10 +901,48 @@ void playQuiz(struct RecordTag Record[], struct CurrentPlayTag *B, int * Asize)
     *Asize = *backMainMenu(Record, Asize);
 }
 
+/* viewScores shows all current scores inside the file "score.txt"
+ @return <none>
+ Pre-condition: score.txt is existing
+ */
 void viewScores()
 {
     printf("Viewing scores...\n");
-    displayScores();
+    
+    int nRow = 1;
+    // declare file pointer variable
+    FILE * fp;
+    
+    fp = fopen("score.txt", "r");
+    
+    // declare temporary variables for scanned names and scores from text file
+    char sfName[51];
+    int nfScore;
+    
+    printf("Reading scores from file ...\n");
+    
+    printf("Row #\t");
+    printf("Player Name\t");
+    printf("Score\t\n");
+    
+    while ((fscanf(fp, "%s\n", sfName) == 1) && (!feof(fp)))
+    {
+        printf("%d\t", nRow);
+        nRow++;
+        printf("%s\t\t", sfName);
+        // get score
+        fscanf(fp, "%d\n", &nfScore);
+        printf("%d\t\n", nfScore);
+    }
+    
+    if (strcmp(sfName, "") == 0)
+    {
+        printf("There are currently no scores available.\n");
+    }
+    
+    printf("\n");
+    
+    fclose(fp);
 }
 
 /* Play allows the user to play the quiz, view the scores, as well as go back to the Main Menu
