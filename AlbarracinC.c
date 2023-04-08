@@ -1,8 +1,8 @@
 /******************************************
-File Name: AlbarracinC.C
-Author: Clarissa M. Albarracin
-Last Update: April 8, 2023
-The code is for the Machine Project in CCPROG2
+ File Name: AlbarracinC.C
+ Author: Clarissa M. Albarracin
+ Last Update: April 8, 2023
+ The code is for the Machine Project in CCPROG2
  School Year 2022-2023
  The program is a Quiz Game where the admin is able to
  execute technical functions for the program's records, and
@@ -285,7 +285,7 @@ int * addRecord(struct RecordTag Records[], int * nSize)
         printf("Choice 3: ");
         scanf("%s", Records[last_index].sChoice3);
         
-        // check if the inputted topic is already existing (the number of existing questions with the same topic will be used to define nQnum of the added record)
+        // check if the inputted topic is already existing (the number of existing questions with the same topic will be used to define nQNum of the added record)
         for (int j = 0; (j < *nSize); j++)
         {
             // do not include j is at the last_index
@@ -403,7 +403,7 @@ void editRecord(struct RecordTag Records[], int nSize)
                 printf("Enter new topic: ");
                 scanf("%s", Records[nIndex].sTopic);
                 
-                // check if the modified topic is already existing (the number of existing questions with the same topic will be used to define nQnum of the added record)
+                // check if the modified topic is already existing (the number of existing questions with the same topic will be used to define nQNum of the added record)
                 for (int k = 0; (k < nSize); k++)
                 {
                     if (k != nIndex)
@@ -575,7 +575,7 @@ int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize,
     
     if (isPlay)
     {
-        strcpy(sFilename, "sample-records.txt");
+        strcpy(sFilename, "stored-records.txt");
     }
     else
     {
@@ -641,7 +641,7 @@ int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize,
 }
 
 /*
- exportData allows the admin to store the data from the program's records to a file
+ exportData allows the admin to store the data from the program's records to both a filename inputted by the admin, and the masterfile named "stored-records.txt"
  @param Records is an array of structures which stores the records
  nSize indicates the current number of non-empty elements of the array Records
  @return <none>
@@ -652,7 +652,7 @@ void exportData(struct RecordTag Records[], int nSize)
     printf("Exporting data...\n");
     
     // declare file pointer variable
-    FILE * fp;
+    FILE * fp1;
     
     // declare array for filename
     char sFilename[FN_SIZE];
@@ -664,12 +664,12 @@ void exportData(struct RecordTag Records[], int nSize)
     scanf("%s", sFilename);
     
     // open file named sFilename in writing mode
-    fp = fopen(sFilename, "w");
+    fp1 = fopen(sFilename, "w");
     
     // iterate over all elements of array Records unless it is at the end of file
     for (int i = 0; (i < (nSize - 1)) && (bKeep_Reading); i++)
     {
-        if (feof(fp))
+        if (feof(fp1))
         {
             // exit loop
             bKeep_Reading = 0;
@@ -677,18 +677,49 @@ void exportData(struct RecordTag Records[], int nSize)
         else
         {
             // print all information
-            fprintf(fp, "%s\n", Records[i].sTopic);
-            fprintf(fp, "%d\n", Records[i].nQNum);
-            fprintf(fp, "%s\n", Records[i].sQuestion);
-            fprintf(fp, "%s\n", Records[i].sChoice1);
-            fprintf(fp, "%s\n", Records[i].sChoice2);
-            fprintf(fp, "%s\n", Records[i].sChoice3);
-            fprintf(fp, "%s\n\n", Records[i].sAnswer);
+            fprintf(fp1, "%s\n", Records[i].sTopic);
+            fprintf(fp1, "%d\n", Records[i].nQNum);
+            fprintf(fp1, "%s\n", Records[i].sQuestion);
+            fprintf(fp1, "%s\n", Records[i].sChoice1);
+            fprintf(fp1, "%s\n", Records[i].sChoice2);
+            fprintf(fp1, "%s\n", Records[i].sChoice3);
+            fprintf(fp1, "%s\n\n", Records[i].sAnswer);
         }
     }
     
     // close file
-    fclose(fp);
+    fclose(fp1);
+    
+    // export data to the file "stored-records.txt" (this will be the master file for all records)
+    FILE * fp2;
+    
+    strcpy(sFilename, "stored-records.txt");
+    
+    fp2 = fopen(sFilename, "a");
+    
+    // iterate over all elements of array Records unless it is at the end of file
+    for (int i = 0; (i < (nSize - 1)) && (bKeep_Reading); i++)
+    {
+        if (feof(fp2))
+        {
+            // exit loop
+            bKeep_Reading = 0;
+        }
+        else
+        {
+            // print all information
+            fprintf(fp1, "%s\n", Records[i].sTopic);
+            fprintf(fp1, "%d\n", Records[i].nQNum);
+            fprintf(fp1, "%s\n", Records[i].sQuestion);
+            fprintf(fp1, "%s\n", Records[i].sChoice1);
+            fprintf(fp1, "%s\n", Records[i].sChoice2);
+            fprintf(fp1, "%s\n", Records[i].sChoice3);
+            fprintf(fp1, "%s\n\n", Records[i].sAnswer);
+        }
+    }
+    
+    // close file
+    fclose(fp2);
 }
 
 /*
