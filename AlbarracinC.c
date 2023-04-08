@@ -51,12 +51,12 @@ void displayRecord(struct RecordTag Record[], int i);
 void displayUniqTopics(struct RecordTag Record[], int nSize);
 void getInput(char sentence[], int LEN);
 void askPassword(int * ptr_isValidPW);
-int * addRecord(struct RecordTag Record[], int * s);
-void editRecord(struct RecordTag Record[], int s);
-int * deleteRecord(struct RecordTag Record[], int * s);
-int * importData(struct RecordTag Record[], int * ptr_isValidFile, int * s, int isPlay);
-void exportData(struct RecordTag Record[], int s);
-void manageData(struct RecordTag Record[], int * s);
+int * addRecord(struct RecordTag Record[], int * nSize);
+void editRecord(struct RecordTag Record[], int nSize);
+int * deleteRecord(struct RecordTag Record[], int * nSize);
+int * importData(struct RecordTag Record[], int * ptr_isValidFile, int * nSize, int isPlay);
+void exportData(struct RecordTag Record[], int nSize);
+void manageData(struct RecordTag Record[], int * nSize);
 void playQuiz(struct RecordTag Record[], struct CurrentPlayTag *B, int * Asize);
 void viewScores();
 void Play(struct RecordTag Record[], struct CurrentPlayTag *B, int Asize);
@@ -1003,6 +1003,7 @@ int main()
     bool bIsQuit = 0;
     struct RecordTag Records[REC_SIZE];
     struct CurrentPlayTag Playing;
+    char StoredExports[5][FN_SIZE];
     int nSize = 1;
     
     do
