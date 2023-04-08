@@ -4,7 +4,9 @@ Author: Clarissa M. Albarracin
 Last Update: April 8, 2023
 The code is for the Machine Project in CCPROG2
  School Year 2022-2023
- The program is a Quiz Game where the admin is able to execute technical functions for the program's records, and users can play it to help them practice on the said topics
+ The program is a Quiz Game where the admin is able to
+ execute technical functions for the program's records, and
+ users can play it to help them practice on the said topics
  ******************************************/
 
 #include <stdio.h>
@@ -730,7 +732,7 @@ void manageData(struct RecordTag Record[], int * nSize)
     int isValidPW = 0;
     int isValidFile = 0;
     int nInput;
-    bool bQuit = 0;
+    bool bIsQuit = 0;
     
     // ask for the admin password
     askPassword(&isValidPW);
@@ -738,7 +740,7 @@ void manageData(struct RecordTag Record[], int * nSize)
     // if valid password
     if (isValidPW)
     {
-        while (bQuit == 0)
+        while (bIsQuit == 0)
         {
             printf("Managing Data ...\n");
             
@@ -769,7 +771,7 @@ void manageData(struct RecordTag Record[], int * nSize)
                     
                 case 6:
                     *nSize = *backMainMenu(Record, nSize);
-                    bQuit = 1;
+                    bIsQuit = 1;
                     break;
                     
                 default:
@@ -959,7 +961,7 @@ void viewScores()
  */
 void Play(struct RecordTag Record[], struct CurrentPlayTag *B, int Asize)
 {
-    bool bQuit = 0;
+    bool bIsQuit = 0;
     int nInput;
     
     printf("Playing ...\n\n");
@@ -971,7 +973,7 @@ void Play(struct RecordTag Record[], struct CurrentPlayTag *B, int Asize)
     
     scanf("%d", &nInput);
     
-    while (bQuit == 0)
+    while (bIsQuit == 0)
     {
         switch (nInput)
         {
@@ -991,14 +993,14 @@ void Play(struct RecordTag Record[], struct CurrentPlayTag *B, int Asize)
                 printf("Please select one of the options provided.\n");
                 break;
         }
-        bQuit = 1;
+        bIsQuit = 1;
     }
 }
 
 int main()
 {
     int nInput;
-    bool bQuit = 0;
+    bool bIsQuit = 0;
     struct RecordTag Records[REC_SIZE];
     struct CurrentPlayTag Playing;
     int nSize = 1;
@@ -1021,7 +1023,7 @@ int main()
                 
             case 3:
                 printf("Exiting ...\n");
-                bQuit = 1;
+                bIsQuit = 1;
                 break;
                 
             default:
@@ -1030,7 +1032,7 @@ int main()
         }
         
     }
-    while (bQuit == 0);
+    while (bIsQuit == 0);
     
     //USED FOR DEBUGGING ONLY (prints out records)
     for (int i = 0; i < (nSize - 1); i++)
