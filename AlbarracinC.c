@@ -1101,7 +1101,7 @@ void Play(struct RecordTag Records[], struct CurrentPlayTag *B, int Asize)
     int nInput;
     
     printf("Playing ...\n\n");
-    
+     
     while (bIsQuit == 0)
     {
         // display playQuiz options
