@@ -587,6 +587,10 @@ int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize,
     char sfTopic[TPC_SIZE];
     int nfQNum;
     char sfQuestion[Q_SIZE];
+    char sfAnswer[CA_SIZE];
+    char sfChoice1[CA_SIZE];
+    char sfChoice2[CA_SIZE];
+    char sfChoice3[CA_SIZE];
     
     int n = 0;
     int initialS = *nSize;
@@ -642,18 +646,31 @@ int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize,
             // remove newline copied by fgets
             sfQuestion[strlen(sfQuestion) - 1] = '\0';
             
-            // store data to program's record list
-            strcpy(Records[i].sTopic, sfTopic);
-            Records[i].nQNum = nfQNum;
-            strcpy(Records[i].sQuestion, sfQuestion);
-            fscanf(fp, "%s\n", Records[i].sChoice1);
-            fscanf(fp, "%s\n", Records[i].sChoice2);
-            fscanf(fp, "%s\n", Records[i].sChoice3);
-            fscanf(fp, "%s\n", Records[i].sAnswer);
+            fscanf(fp, "%s\n", sfChoice1);
+            fscanf(fp, "%s\n", sfChoice2);
+            fscanf(fp, "%s\n", sfChoice3);
+            fscanf(fp, "%s\n", sfAnswer);
             
-            *nSize = (*nSize + 1);
-            // iterate
-            i++;
+            if (isQandA_Existing(Records, nSize, sfQuestion, sfAnswer) == 1)
+            {
+                printf("The said record is existing already. (Import unsuccessful) \n\n");
+            }
+            else if (isQandA_Existing(Records, nSize, sfQuestion, sfAnswer) == -1)
+            {
+                // store data to program's record list
+                strcpy(Records[i].sTopic, sfTopic);
+                Records[i].nQNum = nfQNum;
+                strcpy(Records[i].sQuestion, sfQuestion);
+                strcpy(Records[i].sAnswer, sfAnswer);
+                strcpy(Records[i].sChoice1, sfChoice1);
+                strcpy(Records[i].sChoice2, sfChoice2);
+                strcpy(Records[i].sChoice3, sfChoice3);
+                
+                *nSize = (*nSize + 1);
+                // iterate
+                i++;
+            }
+            
         }
     }
     return nSize;
