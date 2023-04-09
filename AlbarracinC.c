@@ -224,6 +224,31 @@ void askPassword(int * ptr_isValidPW)
     }
 }
 
+int isQandA_Existing(struct RecordTag Records[], int * nSize, char Question[Q_SIZE], char Answer[CA_SIZE])
+{
+    bool bIsRecorded = 0;
+    
+    // check if inputted Q&A are already listed in the records
+    for (int i = 0; (i < *nSize) && (!bIsRecorded); i++)
+    {
+        if ((strcmp(Records[i].sQuestion, Question) == 0) && (strcmp(Records[i].sAnswer, Answer) == 0))
+        {
+            // print record
+            displayRecord(Records, i);
+            bIsRecorded = 1;
+            return 1;
+        }
+    }
+    
+    // if not existing,
+    if (!bIsRecorded)
+    {
+        return -1;
+    }
+    
+    return -1;
+}
+
 /*
  addRecord allows the admin to create a new record given that the question and answer are not yet existing (If it is existing, there will be a message displayed to inform admin)
  @param Records is an array of structures which stores the records
@@ -235,7 +260,6 @@ int * addRecord(struct RecordTag Records[], int * nSize)
 {
     char inputQuestion[Q_SIZE];
     char inputAnswer[CA_SIZE];
-    bool bRecorded = 0;
     int nExistingTopic = 1;
     
     printf("Adding a record ...\n");
@@ -250,27 +274,20 @@ int * addRecord(struct RecordTag Records[], int * nSize)
     
     // ask user for the question and answer
     printf("Enter question: ");
-    getInput(inputQuestion, CA_SIZE);
+    getInput(inputQuestion, Q_SIZE);
     
     printf("Enter answer: ");
     scanf("%s", inputAnswer);
     
-    // check if inputted Q&A are already listed in the records
-    for (int i = 0; (i < *nSize) && (!bRecorded); i++)
+    int nResult = isQandA_Existing(Records, nSize, inputQuestion, inputAnswer);
+    
+    if (nResult == 1)
     {
-        if ((strcmp(Records[i].sQuestion, inputQuestion) == 0) && (strcmp(Records[i].sAnswer, inputAnswer) == 0))
-        {
-            printf("Records already listed.\n");
-            
-            // print record
-            displayRecord(Records, i);
-            
-            bRecorded = 1;
-        }
+        printf("Q and A are already existing.\n");
     }
     
     // if not yet recorded,
-    if (!bRecorded)
+    else if (nResult == -1)
     {
         // add the inputted Q&A to the records
         strcpy(Records[last_index].sQuestion, inputQuestion);
@@ -314,6 +331,7 @@ int * addRecord(struct RecordTag Records[], int * nSize)
     
     return nSize;
 }
+
 
 /*
  editRecord allows the admin to edit a field in an existing record
