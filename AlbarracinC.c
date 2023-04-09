@@ -56,6 +56,7 @@ void editRecord(struct RecordTag Records[], int nSize);
 int * deleteRecord(struct RecordTag Records[], int * nSize);
 int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize, int isPlay);
 void exportData(struct RecordTag Records[], int nSize);
+void updateMasterFile(struct RecordTag Records[], int nSize, char mode);
 void manageData(struct RecordTag Records[], int * nSize);
 void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *B, int * Asize);
 void viewScores();
@@ -690,37 +691,83 @@ void exportData(struct RecordTag Records[], int nSize)
     // close file
     fclose(fp1);
     
+    updateMasterFile(Records, nSize, 'a');
+}
+
+/*
+ updateMasterFile allows the admin to either append current records or clear all existing information on the masterfile
+ depending on the mode inputted on the parameter mode
+ @param Records is an array of structures which stores the records
+ nSize indicates the current number of non-empty elements of the array Records
+ @return <none>
+ Pre-condition: <none>
+ */
+void updateMasterFile(struct RecordTag Records[], int nSize, char mode)
+{
     // export data to the file "stored-records.txt" (this will be the master file for all records)
-    FILE * fp2;
+    FILE * fp2 = NULL;
+    
+    // declare array for filename
+    char sFilename[FN_SIZE];
+    
+    bool bKeep_Reading = 1;
     
     strcpy(sFilename, "stored-records.txt");
-    
-    fp2 = fopen(sFilename, "a");
-    
-    // iterate over all elements of array Records unless it is at the end of file
-    for (int i = 0; (i < (nSize - 1)) && (bKeep_Reading); i++)
+    if (mode == 'a')
     {
-        if (feof(fp2))
+        fp2 = fopen(sFilename, "a");
+        
+        // iterate over all elements of array Records unless it is at the end of file
+        for (int i = 0; (i < (nSize - 1)) && (bKeep_Reading); i++)
         {
-            // exit loop
-            bKeep_Reading = 0;
-        }
-        else
-        {
-            // print all information
-            fprintf(fp1, "%s\n", Records[i].sTopic);
-            fprintf(fp1, "%d\n", Records[i].nQNum);
-            fprintf(fp1, "%s\n", Records[i].sQuestion);
-            fprintf(fp1, "%s\n", Records[i].sChoice1);
-            fprintf(fp1, "%s\n", Records[i].sChoice2);
-            fprintf(fp1, "%s\n", Records[i].sChoice3);
-            fprintf(fp1, "%s\n\n", Records[i].sAnswer);
+            if (feof(fp2))
+            {
+                // exit loop
+                bKeep_Reading = 0;
+            }
+            else
+            {
+                // print all information
+                fprintf(fp2, "%s\n", Records[i].sTopic);
+                fprintf(fp2, "%d\n", Records[i].nQNum);
+                fprintf(fp2, "%s\n", Records[i].sQuestion);
+                fprintf(fp2, "%s\n", Records[i].sChoice1);
+                fprintf(fp2, "%s\n", Records[i].sChoice2);
+                fprintf(fp2, "%s\n", Records[i].sChoice3);
+                fprintf(fp2, "%s\n\n", Records[i].sAnswer);
+            }
         }
     }
-    
-    // close file
-    fclose(fp2);
-}
+        else if (mode == 'w')
+        {
+            fp2 = fopen(sFilename, "w");
+            
+            // iterate over all elements of array Records unless it is at the end of file
+            for (int i = 0; (i < (nSize - 1)) && (bKeep_Reading); i++)
+            {
+                if (feof(fp2))
+                {
+                    // exit loop
+                    bKeep_Reading = 0;
+                }
+                else
+                {
+                    // print all information
+                    fprintf(fp2, "%s\n", Records[i].sTopic);
+                    fprintf(fp2, "%d\n", Records[i].nQNum);
+                    fprintf(fp2, "%s\n", Records[i].sQuestion);
+                    fprintf(fp2, "%s\n", Records[i].sChoice1);
+                    fprintf(fp2, "%s\n", Records[i].sChoice2);
+                    fprintf(fp2, "%s\n", Records[i].sChoice3);
+                    fprintf(fp2, "%s\n\n", Records[i].sAnswer);
+                }
+            }
+        }
+        
+        
+        // close file
+        fclose(fp2);
+    }
 
 /*
  backMainMenu allows the admin to go back to main menu
@@ -821,6 +868,7 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *B, int * Asize)
     char sQuesArray[REC_SIZE][Q_SIZE];
     int i, j;
     bool isPlaying = 1;
+    bool bIsStored = 0;
     int isValidFile = 0;
     int isFound = 0;
     
@@ -901,7 +949,7 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *B, int * Asize)
                 printf("%d.) %s\n", num + 1, B->sCP_Question);
                 
                 // store answers and choices in currentplay array
-                for (j = 0; j < (*Asize - 1); j++)
+                for (j = 0; (j < (*Asize - 1)) || (!bIsStored); j++)
                 {
                     if (strcmp(B->sCP_Question, Records[j].sQuestion) == 0)
                     {
@@ -914,6 +962,8 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *B, int * Asize)
                         printf("- %s\n", Records[j].sChoice1);
                         printf("- %s\n", Records[j].sChoice2);
                         printf("- %s\n\n", Records[j].sChoice3);
+                        
+                        bIsStored = 1;
                     }
                 }
                 
@@ -1030,6 +1080,7 @@ int main()
     struct RecordTag Records[REC_SIZE];
     struct CurrentPlayTag Playing;
     int nSize = 1;
+    updateMasterFile(Records, nSize, 'w');
     
     do
     {
