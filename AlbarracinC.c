@@ -1138,7 +1138,7 @@ int main()
     int nInput;
     bool bIsQuit = 0;
     struct RecordTag Records[REC_SIZE];
-    struct CurrentPlayTag Playing;
+    struct CurrentPlayTag CurrentPlayRec;
     int nSize = 1;
     updateMasterFile(Records, nSize, 'w');
     
@@ -1155,7 +1155,7 @@ int main()
                 break;
                 
             case 2:
-                Play(&(Records[0]), &Playing, nSize);
+                Play(&(Records[0]), &CurrentPlayRec, nSize);
                 break;
                 
             case 3:
