@@ -28,7 +28,7 @@ struct RecordTag
 
 struct CurrentPlayTag
 {
-    char sCP_Name[51];
+    char sCP_Name[21];
     char sCP_Question[Q_SIZE];
     char sCP_Answer[CA_SIZE];
     char sCP_Choice1[CA_SIZE];
@@ -51,9 +51,9 @@ int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize,
 void exportData(struct RecordTag Records[], int nSize);
 void updateMasterFile(struct RecordTag Records[], int nSize, char mode);
 void manageData(struct RecordTag Records[], int * nSize);
-void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *B, int * Asize);
+void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int * Asize);
 void viewScores();
-void Play(struct RecordTag Records[], struct CurrentPlayTag *B, int Asize);
+void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int Asize);
 
 
 /*
@@ -805,7 +805,7 @@ void updateMasterFile(struct RecordTag Records[], int nSize, char mode)
  */
 int * backMainMenu(struct RecordTag Records[], int * nSize)
 {
-    printf("Going back to MAIN MENU...\n");
+    printf("Going back ...\n");
     
     for (int i = 0; i < (*nSize - 1); i++)
     {
@@ -883,7 +883,7 @@ void manageData(struct RecordTag Records[], int * nSize)
 }
 
 
-void exportScore(struct CurrentPlayTag * B)
+void exportScore(struct CurrentPlayTag * CurrentPlayRec)
 {
     // export data to the file "stored-records.txt" (this will be the master file for all records)
     FILE * fp3 = NULL;
@@ -895,8 +895,8 @@ void exportScore(struct CurrentPlayTag * B)
     fp3 = fopen(sFilename, "a");
     
     // print all information
-    fprintf(fp3, "%s\n", B->sCP_Name);
-    fprintf(fp3, "%d\n", B->nCP_Score);
+    fprintf(fp3, "%s\n", CurrentPlayRec->sCP_Name);
+    fprintf(fp3, "%d\n", CurrentPlayRec->nCP_Score);
     fprintf(fp3, "\n");
     
     // close file
@@ -911,7 +911,7 @@ void exportScore(struct CurrentPlayTag * B)
  Pre-condition: <none>
  */
 
-void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *B, int * Asize)
+void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int * Asize)
 {
     char sInputTopic[TPC_SIZE];
     char sInputAnswer[CA_SIZE];
@@ -931,10 +931,10 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *B, int * Asize)
     printf("Enter your name: ");
     
     // store value to struct array
-    scanf("%s", B->sCP_Name);
+    scanf("%s", CurrentPlayRec->sCP_Name);
     
     // initialize score of player to zero
-    B->nCP_Score = 0;
+    CurrentPlayRec->nCP_Score = 0;
     
     // import records data
     *Asize = *importData(Records, &isValidFile, Asize, 1);
@@ -998,23 +998,23 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *B, int * Asize)
                     }
                     
                     // print current score
-                    printf("Current Score: %d\n", B->nCP_Score);
+                    printf("Current Score: %d\n", CurrentPlayRec->nCP_Score);
                     
                     // randomize questions under the topic
                     srand(time(0));
                     int num = (rand() % nQues);
-                    strcpy(B->sCP_Question, sQuesArray[num]);
-                    printf("%d.) %s\n", num + 1, B->sCP_Question);
+                    strcpy(CurrentPlayRec->sCP_Question, sQuesArray[num]);
+                    printf("%d.) %s\n", num + 1, CurrentPlayRec->sCP_Question);
                     
                     // store answers and choices in currentplay array
                     for (j = 0; (j < (*Asize - 1)) || (!bIsStored); j++)
                     {
-                        if (strcmp(B->sCP_Question, Records[j].sQuestion) == 0)
+                        if (strcmp(CurrentPlayRec->sCP_Question, Records[j].sQuestion) == 0)
                         {
-                            strcpy(B->sCP_Answer, Records[j].sAnswer);
-                            strcpy(B->sCP_Choice1, Records[j].sChoice1);
-                            strcpy(B->sCP_Choice2, Records[j].sChoice2);
-                            strcpy(B->sCP_Choice3, Records[j].sChoice3);
+                            strcpy(CurrentPlayRec->sCP_Answer, Records[j].sAnswer);
+                            strcpy(CurrentPlayRec->sCP_Choice1, Records[j].sChoice1);
+                            strcpy(CurrentPlayRec->sCP_Choice2, Records[j].sChoice2);
+                            strcpy(CurrentPlayRec->sCP_Choice3, Records[j].sChoice3);
                             
                             // print choices
                             printf("- %s\n", Records[j].sChoice1);
@@ -1028,21 +1028,21 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *B, int * Asize)
                     // get input answer from user
                     scanf("%s", sInputAnswer);
                     
-                    if (strcmp(sInputAnswer, B->sCP_Answer) == 0)
+                    if (strcmp(sInputAnswer, CurrentPlayRec->sCP_Answer) == 0)
                     {
-                        B->nCP_Score++;
+                        CurrentPlayRec->nCP_Score++;
                     }
                     else
                     {
                         printf("Sorry, incorrect answer. | ");
-                        printf("Correct: %s\n", B->sCP_Answer);
+                        printf("Correct: %s\n", CurrentPlayRec->sCP_Answer);
                     }
                 }
             }
-            printf("Total score: %d\n", B->nCP_Score);
+            printf("Total score: %d\n", CurrentPlayRec->nCP_Score);
         }
     }
-    exportScore(B);
+    exportScore(CurrentPlayRec);
     *Asize = *backMainMenu(Records, Asize);
 }
 
@@ -1095,7 +1095,7 @@ void viewScores()
  @return <none>
  Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
  */
-void Play(struct RecordTag Records[], struct CurrentPlayTag *B, int Asize)
+void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int Asize)
 {
     bool bIsQuit = 0;
     int nInput;
@@ -1114,7 +1114,7 @@ void Play(struct RecordTag Records[], struct CurrentPlayTag *B, int Asize)
         switch (nInput)
         {
             case 1:
-                playQuiz(Records, B, &Asize);
+                playQuiz(Records, CurrentPlayRec, &Asize);
                 break;
                 
             case 2:
