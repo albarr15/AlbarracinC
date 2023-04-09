@@ -1,13 +1,6 @@
-/******************************************
- File Name: AlbarracinC.C
- Author: Clarissa M. Albarracin
- Last Update: April 8, 2023
- The code is for the Machine Project in CCPROG2
- School Year 2022-2023
- The program is a Quiz Game where the admin is able to
- execute technical functions for the program's records, and
- users can play it to help them practice on the said topics
- ******************************************/
+/*********************************************************************************************************
+This is to certify that this project is my own work, based on my personal efforts in studying and applying the concepts learned. I have constructed the functions and their respective algorithms and corresponding code by myself. The program was run, tested, and debugged by my own efforts. I further certify that I have not copied in part or whole or otherwise plagiarized the work of other students and/or persons.
+Clarissa M. Albarracin, DLSU ID# 12206563 *********************************************************************************************************/
 
 #include <stdio.h>
 #include <stdbool.h>
