@@ -1,6 +1,6 @@
 /*********************************************************************************************************
-This is to certify that this project is my own work, based on my personal efforts in studying and applying the concepts learned. I have constructed the functions and their respective algorithms and corresponding code by myself. The program was run, tested, and debugged by my own efforts. I further certify that I have not copied in part or whole or otherwise plagiarized the work of other students and/or persons.
-Clarissa M. Albarracin, DLSU ID# 12206563 *********************************************************************************************************/
+ This is to certify that this project is my own work, based on my personal efforts in studying and applying the concepts learned. I have constructed the functions and their respective algorithms and corresponding code by myself. The program was run, tested, and debugged by my own efforts. I further certify that I have not copied in part or whole or otherwise plagiarized the work of other students and/or persons.
+ Clarissa M. Albarracin, DLSU ID# 12206563 *********************************************************************************************************/
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -766,36 +766,35 @@ void updateMasterFile(struct RecordTag Records[], int nSize, char mode)
             }
         }
     }
-        else if (mode == 'w')
+    else if (mode == 'w')
+    {
+        fp2 = fopen(sFilename, "w");
+        
+        // iterate over all elements of array Records unless it is at the end of file
+        for (int i = 0; (i < (nSize - 1)) && (bKeep_Reading); i++)
         {
-            fp2 = fopen(sFilename, "w");
-            
-            // iterate over all elements of array Records unless it is at the end of file
-            for (int i = 0; (i < (nSize - 1)) && (bKeep_Reading); i++)
+            if (feof(fp2))
             {
-                if (feof(fp2))
-                {
-                    // exit loop
-                    bKeep_Reading = 0;
-                }
-                else
-                {
-                    // print all information
-                    fprintf(fp2, "%s\n", Records[i].sTopic);
-                    fprintf(fp2, "%d\n", Records[i].nQNum);
-                    fprintf(fp2, "%s\n", Records[i].sQuestion);
-                    fprintf(fp2, "%s\n", Records[i].sChoice1);
-                    fprintf(fp2, "%s\n", Records[i].sChoice2);
-                    fprintf(fp2, "%s\n", Records[i].sChoice3);
-                    fprintf(fp2, "%s\n\n", Records[i].sAnswer);
-                }
+                // exit loop
+                bKeep_Reading = 0;
+            }
+            else
+            {
+                // print all information
+                fprintf(fp2, "%s\n", Records[i].sTopic);
+                fprintf(fp2, "%d\n", Records[i].nQNum);
+                fprintf(fp2, "%s\n", Records[i].sQuestion);
+                fprintf(fp2, "%s\n", Records[i].sChoice1);
+                fprintf(fp2, "%s\n", Records[i].sChoice2);
+                fprintf(fp2, "%s\n", Records[i].sChoice3);
+                fprintf(fp2, "%s\n\n", Records[i].sAnswer);
             }
         }
-        
-        
-        // close file
-        fclose(fp2);
     }
+    
+    // close file
+    fclose(fp2);
+}
 
 /*
  backMainMenu allows the admin to go back to main menu
@@ -883,12 +882,35 @@ void manageData(struct RecordTag Records[], int * nSize)
     }
 }
 
+
+void exportScore(struct CurrentPlayTag * B)
+{
+    // export data to the file "stored-records.txt" (this will be the master file for all records)
+    FILE * fp3 = NULL;
+    
+    // declare array for filename
+    char sFilename[FN_SIZE];
+    
+    strcpy(sFilename, "score.txt");
+    fp3 = fopen(sFilename, "a");
+    
+    // print all information
+    fprintf(fp3, "%s\n", B->sCP_Name);
+    fprintf(fp3, "%d\n", B->nCP_Score);
+    fprintf(fp3, "\n");
+    
+    // close file
+    fclose(fp3);
+}
+
+
 /* playQuiz allows the user to play the quiz game which contains all records that have been exported
  @param Records is an array of structures which stores the records
  *nSize is a pointer to the variable nSize which indicates the current number of non-empty elements of the array Records
  @return <none>
  Pre-condition: <none>
  */
+
 void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *B, int * Asize)
 {
     char sInputTopic[TPC_SIZE];
@@ -953,64 +975,74 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *B, int * Asize)
                     printf("There are no topics with the name: %s\n", sInputTopic);
                 }
             }
+            
+            
             if (isFound)
             {
-                printf("You have selected : %s\n", sInputTopic);
-                
-                // find
-                for (i = 0; i < (*Asize - 1); i++)
+                if (strcmp(sInputTopic, "0") == 0)
                 {
-                    if (strcmp(Records[i].sTopic, sInputTopic) == 0)
-                    {
-                        strcpy(sQuesArray[nQues], Records[i].sQuestion);
-                        nQues++;
-                    }
-                }
-                
-                // print current score
-                printf("Current Score: %d\n", B->nCP_Score);
-                
-                // randomize questions under the topic
-                srand(time(0));
-                int num = (rand() % nQues);
-                strcpy(B->sCP_Question, sQuesArray[num]);
-                printf("%d.) %s\n", num + 1, B->sCP_Question);
-                
-                // store answers and choices in currentplay array
-                for (j = 0; (j < (*Asize - 1)) || (!bIsStored); j++)
-                {
-                    if (strcmp(B->sCP_Question, Records[j].sQuestion) == 0)
-                    {
-                        strcpy(B->sCP_Answer, Records[j].sAnswer);
-                        strcpy(B->sCP_Choice1, Records[j].sChoice1);
-                        strcpy(B->sCP_Choice2, Records[j].sChoice2);
-                        strcpy(B->sCP_Choice3, Records[j].sChoice3);
-                        
-                        // print choices
-                        printf("- %s\n", Records[j].sChoice1);
-                        printf("- %s\n", Records[j].sChoice2);
-                        printf("- %s\n\n", Records[j].sChoice3);
-                        
-                        bIsStored = 1;
-                    }
-                }
-                
-                // get input answer from user
-                scanf("%s", sInputAnswer);
-                
-                if (strcmp(sInputAnswer, B->sCP_Answer) == 0)
-                {
-                    B->nCP_Score++;
+                    isPlaying = 0;
                 }
                 else
                 {
-                    printf("Sorry, incorrect answer. | ");
-                    printf("Correct: %s\n", B->sCP_Answer);
+                    printf("You have selected : %s\n", sInputTopic);
+                    
+                    // find
+                    for (i = 0; i < (*Asize - 1); i++)
+                    {
+                        if (strcmp(Records[i].sTopic, sInputTopic) == 0)
+                        {
+                            strcpy(sQuesArray[nQues], Records[i].sQuestion);
+                            nQues++;
+                        }
+                    }
+                    
+                    // print current score
+                    printf("Current Score: %d\n", B->nCP_Score);
+                    
+                    // randomize questions under the topic
+                    srand(time(0));
+                    int num = (rand() % nQues);
+                    strcpy(B->sCP_Question, sQuesArray[num]);
+                    printf("%d.) %s\n", num + 1, B->sCP_Question);
+                    
+                    // store answers and choices in currentplay array
+                    for (j = 0; (j < (*Asize - 1)) || (!bIsStored); j++)
+                    {
+                        if (strcmp(B->sCP_Question, Records[j].sQuestion) == 0)
+                        {
+                            strcpy(B->sCP_Answer, Records[j].sAnswer);
+                            strcpy(B->sCP_Choice1, Records[j].sChoice1);
+                            strcpy(B->sCP_Choice2, Records[j].sChoice2);
+                            strcpy(B->sCP_Choice3, Records[j].sChoice3);
+                            
+                            // print choices
+                            printf("- %s\n", Records[j].sChoice1);
+                            printf("- %s\n", Records[j].sChoice2);
+                            printf("- %s\n\n", Records[j].sChoice3);
+                            
+                            bIsStored = 1;
+                        }
+                    }
+                    
+                    // get input answer from user
+                    scanf("%s", sInputAnswer);
+                    
+                    if (strcmp(sInputAnswer, B->sCP_Answer) == 0)
+                    {
+                        B->nCP_Score++;
+                    }
+                    else
+                    {
+                        printf("Sorry, incorrect answer. | ");
+                        printf("Correct: %s\n", B->sCP_Answer);
+                    }
                 }
             }
             printf("Total score: %d\n", B->nCP_Score);
         }
     }
+    exportScore(B);
     *Asize = *backMainMenu(Records, Asize);
 }
 
@@ -1070,15 +1102,15 @@ void Play(struct RecordTag Records[], struct CurrentPlayTag *B, int Asize)
     
     printf("Playing ...\n\n");
     
-    // display playQuiz options
-    printf("[1] Play\n");
-    printf("[2] View Scores\n");
-    printf("[3] Go back to MAIN MENU\n");
-    
-    scanf("%d", &nInput);
-    
     while (bIsQuit == 0)
     {
+        // display playQuiz options
+        printf("[1] Play\n");
+        printf("[2] View Scores\n");
+        printf("[3] Go back to MAIN MENU\n");
+        
+        scanf("%d", &nInput);
+        
         switch (nInput)
         {
             case 1:
@@ -1091,13 +1123,13 @@ void Play(struct RecordTag Records[], struct CurrentPlayTag *B, int Asize)
                 
             case 3:
                 printf("Exiting...\n");
+                bIsQuit = 1;
                 break;
                 
             default:
                 printf("Please select one of the options provided.\n");
                 break;
         }
-        bIsQuit = 1;
     }
 }
 
