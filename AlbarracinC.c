@@ -160,7 +160,7 @@ void getInput(char sentence[], int nLength)
 }
 
 /*
- askPassword requires the admin to user the correct admin password as well as masks the password with asterisks while it is being typed for additional security
+ askPassword requires the admin to input the correct admin password while masking the password with asterisks as it is typed for additional security
  *ptr_isValidPW is a pointer to the variable 'isValidPW' in order for the manageData to check the validity of the password
  @return <none>
  Pre-condition: User has selected Manage Data from the menu, user cannot backspace or add spaces when entering the password
@@ -217,6 +217,16 @@ void askPassword(int * ptr_isValidPW)
     }
 }
 
+/*
+ isQandA_Existing checks whether or not the parameter Question and Answer are existing in the Records
+ @param Records is an array of structures which stores the records
+        *nSize is a pointer to the variable nSize which indicates the current number of non-empty elements of the array Records
+        Question is a character array which stores the question to be checked
+        Answer is a character array which stores the answer to be checked
+ @return 1 if it is already existing,
+        -1 if not yet existing
+ Pre-condition: The answer must be the same as only one of Choice1, Choice2, or Choice3.
+ */
 int isQandA_Existing(struct RecordTag Records[], int * nSize, char Question[Q_SIZE], char Answer[CA_SIZE])
 {
     bool bIsRecorded = 0;
