@@ -42,7 +42,7 @@ void displayMenu();
 void displaymanageData();
 void displayRecord(struct RecordTag Records[], int i);
 void displayUniqueTopics(struct RecordTag Records[], int nSize);
-void getInput(char sentence[], int LEN);
+void getInput(char sentence[], int nLength);
 void askPassword(int * ptr_isValidPW);
 int * addRecord(struct RecordTag Records[], int * nSize);
 void editRecord(struct RecordTag Records[], int nSize);
@@ -111,7 +111,7 @@ void displayRecord(struct RecordTag Records[], int i)
     printf("Answer: %s\n", Records[i].sAnswer);
 }
 
-/* displayUniqueTopics shows all current records without duplicates
+/* displayUniqueTopics shows all current records' topics without duplicates
  @param Records is an array of structures which stores the records
  i is the index of the array which will be displayed
  @return <none>
@@ -133,11 +133,11 @@ void displayUniqueTopics(struct RecordTag Records[], int s)
 /*
  getInput allows for sentence inputs wherein all characters before the newline character is stored in the array
  @param sentence is a string where all characters before newline is stored
- LEN is the maximum size the sentence can have
+ nLength is the maximum size the sentence can have
  @return <none>
  Pre-condition: <none>
  */
-void getInput(char sentence[], int LEN)
+void getInput(char sentence[], int nLength)
 {
     int i = 0;
     char temp;
@@ -156,7 +156,7 @@ void getInput(char sentence[], int LEN)
             i++;
             sentence[i] = '\0';
         }
-    } while (i < LEN && ch != '\n');
+    } while (i < nLength && ch != '\n');
 }
 
 /*
