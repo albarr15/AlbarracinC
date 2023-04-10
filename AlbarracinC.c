@@ -51,9 +51,9 @@ int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize,
 void exportData(struct RecordTag Records[], int nSize);
 void updateMasterFile(struct RecordTag Records[], int nSize, char mode);
 void manageData(struct RecordTag Records[], int * nSize);
-void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int * Asize);
+void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int * nSize);
 void viewScores();
-void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int Asize);
+void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int nSize);
 
 
 /*
@@ -72,7 +72,7 @@ void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int
 void
 displayMenu()
 {
-    printf("-----GENERAL KNOWLEDGE QUIZ GAME-----\n\n");
+    printf("\n\n-----GENERAL KNOWLEDGE QUIZ GAME-----\n\n");
     printf("[1] Manage Data\n");
     printf("[2] Play\n");
     printf("[3] Exit\n");
@@ -196,7 +196,7 @@ void askPassword(int * ptr_isValidPW)
     // if password is correct
     if (strcmp(sPWInput, sADMINPW) == 0)
     {
-        printf("Accessing admin controls...\n");
+        printf("Accessing admin controls...\n\n");
         // set isValidPW to 1
         n = 1;
         *ptr_isValidPW = n;
@@ -205,7 +205,6 @@ void askPassword(int * ptr_isValidPW)
     else if (strcmp(sPWInput, "1") == 0)
     {
         // go back to main menu
-        printf("Going back...\n");
     }
     // if incorrect password
     else if (strcmp(sPWInput, sADMINPW) != 0)
@@ -265,7 +264,7 @@ int * addRecord(struct RecordTag Records[], int * nSize)
     char inputAnswer[CA_SIZE];
     int nExistingTopics = 1;
     
-    printf("Adding a record ...\n");
+    printf("----- Add Record -----\n\n");
     
     // define last_index to determine where the added record will be placed in the struct array
     int last_index = (*nSize - 1);
@@ -322,8 +321,10 @@ int * addRecord(struct RecordTag Records[], int * nSize)
         // assign nQNum
         Records[last_index].nQNum = nExistingTopics;
         
-        printf("Added successfully: ");
-        printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[last_index].sTopic, Records[last_index].nQNum, Records[last_index].sQuestion, Records[last_index].sChoice1, Records[last_index].sChoice2, Records[last_index].sChoice3, Records[last_index].sAnswer);
+        printf("\n----- Addition successful -----\n\n");
+        displayRecord(Records, last_index);
+        printf("\n");
+        // printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[last_index].sTopic, Records[last_index].nQNum, Records[last_index].sQuestion, Records[last_index].sChoice1, Records[last_index].sChoice2, Records[last_index].sChoice3, Records[last_index].sAnswer);
         
         // add 1 to current struct array size
         *nSize = (*nSize + 1);
@@ -352,7 +353,7 @@ void editRecord(struct RecordTag Records[], int nSize)
     int nExistingTopics = 1;
     int bValid = 0;
     
-    printf("Editing a record...\n");
+    printf("----- Edit Record -----\n\n");
     
     displayUniqueTopics(Records, nSize);
     
@@ -380,7 +381,7 @@ void editRecord(struct RecordTag Records[], int nSize)
     {
         printf("There are no records with the topic you entered.\n");
     }
-    else
+    else // if inputted topic is in records
     {
         printf("Choose the record you want to edit: ");
         scanf("%d", &nRecord);
@@ -472,7 +473,7 @@ void editRecord(struct RecordTag Records[], int nSize)
             default:
                 break;
         }
-        
+        printf("----- Edit successful -----\n");
         printf("\n[1] Go back to Main Menu\n\n");
         editRecord(Records, nSize);
     }
@@ -495,7 +496,8 @@ int * deleteRecord(struct RecordTag Records[], int * nSize)
     char temp;
     int i;
     
-    printf("Deleting a record...\n");
+    
+    printf("----- Delete Record -----\n\n");
     
     // display unique topics
     displayUniqueTopics(Records, *nSize);
@@ -566,6 +568,7 @@ int * deleteRecord(struct RecordTag Records[], int * nSize)
                 strcpy(Records[pos].sAnswer, Records[pos + 1].sAnswer);
             }
             *nSize = (*nSize - 1);
+            printf("----- Delete successful -----\n");
         }
     }
     return nSize;
@@ -577,8 +580,8 @@ int * deleteRecord(struct RecordTag Records[], int * nSize)
  *ptr_isValidFile points to the variable isValidFile
  *nSize is a pointer to the variable nSize which indicates the current number of non-empty elements of the array Records
  isPlay indicates whether or not the importData function is used in the Play part of the program or not
- @return <none>
- Pre-condition: <none>
+ @return nSize wherein nSize will be added depending on the number of records added through importing
+ Pre-condition: the file's content must be in correct format
  */
 int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize, int isPlay)
 {
@@ -615,7 +618,6 @@ int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize,
     // if user inputted 1
     if (strcmp(sFilename, "1") == 0)
     {
-        printf("Going back to Manage Data Menu ...\n");
         n = 1;
         *ptr_isValidFile = n;
     }
@@ -630,7 +632,7 @@ int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize,
     // else, push through with importing data
     else
     {
-        printf("Importing data from file ...\n");
+        printf("----- Import Data -----\n\n");
         
         while ((fscanf(fp, "%s\n", sfTopic) == 1) && (!(strcmp(sfTopic, "\n") == 0)))
         {
@@ -675,7 +677,6 @@ int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize,
                 // iterate
                 i++;
             }
-
         }
     }
     return nSize;
@@ -739,8 +740,9 @@ void exportData(struct RecordTag Records[], int nSize)
  depending on the mode inputted on the parameter mode
  @param Records is an array of structures which stores the records
  nSize indicates the current number of non-empty elements of the array Records
+ char mode indicates whether or not the masterfile will be opened in append or write mode
  @return <none>
- Pre-condition: <none>
+ Pre-condition: masterfile is already existing in computer's files
  */
 void updateMasterFile(struct RecordTag Records[], int nSize, char mode)
 {
@@ -809,16 +811,14 @@ void updateMasterFile(struct RecordTag Records[], int nSize, char mode)
 }
 
 /*
- backMainMenu allows the admin to go back to main menu
+ backMenu allows the admin to go back to the menu and clear all information on records
  @param Records is an array of structures which stores the records
  nSize indicates the current number of non-empty elements of the array Records
- @return <none>
+ @return nSize wherein it will be set to 1 (indicating an empty record set)
  Pre-condition: <none>
  */
-int * backMainMenu(struct RecordTag Records[], int * nSize)
+int * backMenu(struct RecordTag Records[], int * nSize)
 {
-    printf("Going back ...\n");
-    
     for (int i = 0; i < (*nSize - 1); i++)
     {
         strcpy((Records[i]).sTopic, "");
@@ -854,7 +854,7 @@ void manageData(struct RecordTag Records[], int * nSize)
     {
         while (bIsQuit == 0)
         {
-            printf("Managing Data ...\n");
+            printf("----- Manage Data -----\n\n");
             
             displaymanageData();
             scanf("%d", &nInput);
@@ -882,7 +882,7 @@ void manageData(struct RecordTag Records[], int * nSize)
                     break;
                     
                 case 6:
-                    *nSize = *backMainMenu(Records, nSize);
+                    *nSize = *backMenu(Records, nSize);
                     bIsQuit = 1;
                     break;
                     
@@ -894,7 +894,12 @@ void manageData(struct RecordTag Records[], int * nSize)
     }
 }
 
-
+/*
+ exportScore adds the current score of the current player in score.txt
+ @param CurrentPlayRec is a struct wherein the name and score is stored
+ @return <none>
+ Pre-condition: score.txt is already existing in the computer
+ */
 void exportScore(struct CurrentPlayTag * CurrentPlayRec)
 {
     // export data to the file "stored-records.txt" (this will be the master file for all records)
@@ -918,12 +923,12 @@ void exportScore(struct CurrentPlayTag * CurrentPlayRec)
 
 /* playQuiz allows the user to play the quiz game which contains all records that have been exported
  @param Records is an array of structures which stores the records
+ CurrentPlayRec is a struct wherein the name and score is stored
  *nSize is a pointer to the variable nSize which indicates the current number of non-empty elements of the array Records
  @return <none>
  Pre-condition: <none>
  */
-
-void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int * Asize)
+void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int * nSize)
 {
     char sInputTopic[TPC_SIZE];
     char sInputAnswer[CA_SIZE];
@@ -949,11 +954,11 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec,
     CurrentPlayRec->nCP_Score = 0;
     
     // import records data
-    *Asize = *importData(Records, &isValidFile, Asize, 1);
+    *nSize = *importData(Records, &isValidFile, nSize, 1);
     
     while (isPlaying)
     {
-        if (*Asize == 1)
+        if (*nSize == 1)
         {
             printf("There are currently no records available to play.\n");
             isPlaying = 0;
@@ -962,7 +967,7 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec,
         {
             nQues = 0;
             
-            displayUniqueTopics(Records, *Asize);
+            displayUniqueTopics(Records, *nSize);
             
             printf("Enter the topic you want to focus on: ");
             scanf("%s", sInputTopic);
@@ -974,7 +979,7 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec,
             }
             else if (!isFound)
             {
-                for (i = 0; (i < (*Asize - 1)) && (!isFound); i++)
+                for (i = 0; (i < (*nSize - 1)) && (!isFound); i++)
                 {
                     if (strcmp(sInputTopic, Records[i].sTopic) == 0)
                     {
@@ -1000,7 +1005,7 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec,
                     printf("You have selected : %s\n", sInputTopic);
                     
                     // find
-                    for (i = 0; i < (*Asize - 1); i++)
+                    for (i = 0; i < (*nSize - 1); i++)
                     {
                         if (strcmp(Records[i].sTopic, sInputTopic) == 0)
                         {
@@ -1019,7 +1024,7 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec,
                     printf("%d.) %s\n", num + 1, CurrentPlayRec->sCP_Question);
                     
                     // store answers and choices in currentplay array
-                    for (j = 0; (j < (*Asize - 1)) || (!bIsStored); j++)
+                    for (j = 0; (j < (*nSize - 1)) || (!bIsStored); j++)
                     {
                         if (strcmp(CurrentPlayRec->sCP_Question, Records[j].sQuestion) == 0)
                         {
@@ -1055,7 +1060,7 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec,
         }
     }
     exportScore(CurrentPlayRec);
-    *Asize = *backMainMenu(Records, Asize);
+    *nSize = *backMenu(Records, nSize);
 }
 
 /* viewScores shows all current scores inside the file "score.txt"
@@ -1107,7 +1112,7 @@ void viewScores()
  @return <none>
  Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
  */
-void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int Asize)
+void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int nSize)
 {
     bool bIsQuit = 0;
     int nInput;
@@ -1126,7 +1131,7 @@ void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int
         switch (nInput)
         {
             case 1:
-                playQuiz(Records, CurrentPlayRec, &Asize);
+                playQuiz(Records, CurrentPlayRec, &nSize);
                 break;
                 
             case 2:
