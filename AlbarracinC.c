@@ -14,6 +14,7 @@
 #define CA_SIZE 30
 #define REC_SIZE 50
 #define FN_SIZE 30
+#define NAME_SIZE 21
 
 struct RecordTag
 {
@@ -28,7 +29,7 @@ struct RecordTag
 
 struct CurrentPlayTag
 {
-    char sCP_Name[21];
+    char sCP_Name[NAME_SIZE];
     char sCP_Question[Q_SIZE];
     char sCP_Answer[CA_SIZE];
     char sCP_Choice1[CA_SIZE];
@@ -37,20 +38,24 @@ struct CurrentPlayTag
     int nCP_Score;
 };
 
-// function declarations
+// function prototypes
 void displayMenu();
 void displaymanageData();
 void displayRecord(struct RecordTag Records[], int i);
 void displayUniqueTopics(struct RecordTag Records[], int nSize);
 void getInput(char sentence[], int nLength);
 void askPassword(int * ptr_isValidPW);
+int isQandA_Existing(struct RecordTag Records[], int * nSize, char Question[Q_SIZE], char Answer[CA_SIZE]);
+
 int * addRecord(struct RecordTag Records[], int * nSize);
 void editRecord(struct RecordTag Records[], int nSize);
 int * deleteRecord(struct RecordTag Records[], int * nSize);
 int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize, int isPlay);
 void exportData(struct RecordTag Records[], int nSize);
 void updateMasterFile(struct RecordTag Records[], int nSize, char mode);
+int * backMenu(struct RecordTag Records[], int * nSize);
 void manageData(struct RecordTag Records[], int * nSize);
+
 void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int * nSize);
 void viewScores();
 void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int nSize);
@@ -100,7 +105,8 @@ displaymanageData()
  @return <none>
  Pre-condition: Said record should already be existing either by importing data or adding a record
  */
-void displayRecord(struct RecordTag Records[], int i)
+void
+displayRecord(struct RecordTag Records[], int i)
 {
     printf("Topic: %s\n", Records[i].sTopic);
     printf("Question #: %d\n", Records[i].nQNum);
@@ -117,7 +123,8 @@ void displayRecord(struct RecordTag Records[], int i)
  @return <none>
  Pre-condition: <none>
  */
-void displayUniqueTopics(struct RecordTag Records[], int s)
+void
+displayUniqueTopics(struct RecordTag Records[], int s)
 {
     for (int i = 0; i < s; i++)
     {
@@ -137,7 +144,8 @@ void displayUniqueTopics(struct RecordTag Records[], int s)
  @return <none>
  Pre-condition: <none>
  */
-void getInput(char sentence[], int nLength)
+void
+getInput(char sentence[], int nLength)
 {
     int i = 0;
     char temp;
@@ -165,7 +173,8 @@ void getInput(char sentence[], int nLength)
  @return <none>
  Pre-condition: User has selected Manage Data from the menu, user cannot backspace or add spaces when entering the password
  */
-void askPassword(int * ptr_isValidPW)
+void
+askPassword(int * ptr_isValidPW)
 {
     const char sADMINPW[] = "Genquiz411";
     char sPWInput[11];
@@ -226,7 +235,8 @@ void askPassword(int * ptr_isValidPW)
         -1 if not yet existing
  Pre-condition: The answer must be the same as only one of Choice1, Choice2, or Choice3.
  */
-int isQandA_Existing(struct RecordTag Records[], int * nSize, char Question[Q_SIZE], char Answer[CA_SIZE])
+int
+isQandA_Existing(struct RecordTag Records[], int * nSize, char Question[Q_SIZE], char Answer[CA_SIZE])
 {
     bool bIsRecorded = 0;
     
@@ -251,6 +261,8 @@ int isQandA_Existing(struct RecordTag Records[], int * nSize, char Question[Q_SI
     return -1;
 }
 
+
+
 /*
  addRecord allows the admin to create a new record given that the question and answer are not yet existing (If it is existing, there will be a message displayed to inform admin)
  @param Records is an array of structures which stores the records
@@ -258,7 +270,8 @@ int isQandA_Existing(struct RecordTag Records[], int * nSize, char Question[Q_SI
  @return nSize wherein nSize will be iterated by 1 if addition of record is successful
  Pre-condition: The answer to be inputted by the user must be the same as only one of Choice1, Choice2, or Choice3.
  */
-int * addRecord(struct RecordTag Records[], int * nSize)
+int *
+addRecord(struct RecordTag Records[], int * nSize)
 {
     char inputQuestion[Q_SIZE];
     char inputAnswer[CA_SIZE];
@@ -336,7 +349,6 @@ int * addRecord(struct RecordTag Records[], int * nSize)
     return nSize;
 }
 
-
 /*
  editRecord allows the admin to edit a field in an existing record
  @param Records is an array of structures which stores the records
@@ -344,7 +356,8 @@ int * addRecord(struct RecordTag Records[], int * nSize)
  @return <none>
  Pre-condition: When editing topic, the new topic must not be the same as previous one
  */
-void editRecord(struct RecordTag Records[], int nSize)
+void
+editRecord(struct RecordTag Records[], int nSize)
 {
     char sInputTopic[TPC_SIZE];
     int nRecord;
@@ -486,7 +499,8 @@ void editRecord(struct RecordTag Records[], int nSize)
  @return nSize wherein nSize will be deducted by 1 if deletion of record is successful
  Pre-condition: <none>
  */
-int * deleteRecord(struct RecordTag Records[], int * nSize)
+int *
+deleteRecord(struct RecordTag Records[], int * nSize)
 {
     char sInputTopic[TPC_SIZE];
     bool bValid = 0;
@@ -583,7 +597,8 @@ int * deleteRecord(struct RecordTag Records[], int * nSize)
  @return nSize wherein nSize will be added depending on the number of records added through importing
  Pre-condition: the file's content must be in correct format
  */
-int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize, int isPlay)
+int *
+importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize, int isPlay)
 {
     // declare file pointer variable
     FILE * fp;
@@ -689,7 +704,8 @@ int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize,
  @return <none>
  Pre-condition: <none>
  */
-void exportData(struct RecordTag Records[], int nSize)
+void
+exportData(struct RecordTag Records[], int nSize)
 {
     printf("Exporting data...\n");
     
@@ -744,7 +760,8 @@ void exportData(struct RecordTag Records[], int nSize)
  @return <none>
  Pre-condition: masterfile is already existing in computer's files
  */
-void updateMasterFile(struct RecordTag Records[], int nSize, char mode)
+void
+updateMasterFile(struct RecordTag Records[], int nSize, char mode)
 {
     // export data to the file "stored-records.txt" (this will be the master file for all records)
     FILE * fp2 = NULL;
@@ -817,7 +834,8 @@ void updateMasterFile(struct RecordTag Records[], int nSize, char mode)
  @return nSize wherein it will be set to 1 (indicating an empty record set)
  Pre-condition: <none>
  */
-int * backMenu(struct RecordTag Records[], int * nSize)
+int *
+backMenu(struct RecordTag Records[], int * nSize)
 {
     for (int i = 0; i < (*nSize - 1); i++)
     {
@@ -839,7 +857,8 @@ int * backMenu(struct RecordTag Records[], int * nSize)
  @return <none>
  Pre-condition: User has selected Manage Data from the Main Menu and has not yet opted to go back to Main Menu
  */
-void manageData(struct RecordTag Records[], int * nSize)
+void
+manageData(struct RecordTag Records[], int * nSize)
 {
     int isValidPW = 0;
     int isValidFile = 0;
@@ -894,13 +913,16 @@ void manageData(struct RecordTag Records[], int * nSize)
     }
 }
 
+
+
 /*
  exportScore adds the current score of the current player in score.txt
  @param *CurrentPlayRec is a pointer to the struct CurrentPlayRec wherein the name and score is stored
  @return <none>
  Pre-condition: score.txt is already existing in the computer
  */
-void exportScore(struct CurrentPlayTag * CurrentPlayRec)
+void
+exportScore(struct CurrentPlayTag * CurrentPlayRec)
 {
     // export data to the file "stored-records.txt" (this will be the master file for all records)
     FILE * fp3 = NULL;
@@ -920,7 +942,6 @@ void exportScore(struct CurrentPlayTag * CurrentPlayRec)
     fclose(fp3);
 }
 
-
 /* playQuiz allows the user to play the quiz game which contains all records that have been exported
  @param Records is an array of structures which stores the records
  *CurrentPlayRec is a pointer to the struct CurrentPlayRec wherein the name and score is stored
@@ -928,7 +949,8 @@ void exportScore(struct CurrentPlayTag * CurrentPlayRec)
  @return <none>
  Pre-condition: <none>
  */
-void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int * nSize)
+void
+playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int * nSize)
 {
     char sInputTopic[TPC_SIZE];
     char sInputAnswer[CA_SIZE];
@@ -1068,7 +1090,8 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec,
  @return <none>
  Pre-condition: score.txt is existing
  */
-void viewScores()
+void
+viewScores()
 {
     printf("Viewing scores...\n");
     
@@ -1115,7 +1138,8 @@ void viewScores()
  @return <none>
  Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
  */
-void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int nSize)
+void
+Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int nSize)
 {
     bool bIsQuit = 0;
     int nInput;
@@ -1153,7 +1177,10 @@ void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int
     }
 }
 
-int main()
+
+
+int
+main()
 {
     bool bIsQuit = 0;
     int nInput;
