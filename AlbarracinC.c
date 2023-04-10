@@ -58,7 +58,7 @@ void manageData(struct RecordTag Records[], int * nSize);
 
 void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int * nSize);
 void viewScores();
-void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int nSize);
+void QuizGame(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int nSize);
 
 
 /*
@@ -647,7 +647,7 @@ importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize, int i
     // else, push through with importing data
     else
     {
-        printf("----- Import Data -----\n\n");
+        printf("----- Importing Data -----\n\n");
         
         while ((fscanf(fp, "%s\n", sfTopic) == 1) && (!(strcmp(sfTopic, "\n") == 0)))
         {
@@ -707,7 +707,7 @@ importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize, int i
 void
 exportData(struct RecordTag Records[], int nSize)
 {
-    printf("Exporting data...\n");
+    printf("----- Exporting Data -----\n\n");
     
     // declare file pointer variable
     FILE * fp1;
@@ -961,7 +961,7 @@ playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int 
     int isValidFile = 0;
     int isFound = 0;
     
-    printf("Playing quiz...\n");
+    printf("----- Play Quiz -----\n\n");
     
     // initialize number of non-empty elements in sQuesArray
     int nQues = 0;
@@ -1093,7 +1093,7 @@ playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int 
 void
 viewScores()
 {
-    printf("Viewing scores...\n");
+    printf("----- Viewing Scores -----\n\n");
     
     int nRow = 1;
     // declare file pointer variable
@@ -1104,8 +1104,6 @@ viewScores()
     // declare temporary variables for scanned names and scores from text file
     char sfName[51];
     int nfScore;
-    
-    printf("Reading scores from file ...\n");
     
     printf("Row #\t");
     printf("Player Name\t");
@@ -1131,7 +1129,7 @@ viewScores()
     fclose(fp);
 }
 
-/* Play allows the user to play the quiz, view the scores, as well as go back to the Main Menu
+/* QuizGame allows the user to play the quiz, view the scores, as well as go back to the Main Menu
  @param Records is an array of structures which stores the records
  *CurrentPlayRec is a pointer to the struct CurrentPlayRec wherein the name and score is stored
  nSize is an integer which indicates the current number of non-empty elements of the array Records
@@ -1139,12 +1137,12 @@ viewScores()
  Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
  */
 void
-Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int nSize)
+QuizGame(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int nSize)
 {
     bool bIsQuit = 0;
     int nInput;
     
-    printf("Playing ...\n\n");
+    printf("----- Quiz Game -----\n\n");
      
     while (bIsQuit == 0)
     {
@@ -1205,7 +1203,7 @@ main()
                 break;
                 
             case 2:
-                Play(&(Records[0]), &CurrentPlayRec, nSize);
+                QuizGame(&(Records[0]), &CurrentPlayRec, nSize);
                 break;
                 
             case 3:
