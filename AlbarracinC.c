@@ -211,7 +211,7 @@ askPassword(int * ptr_isValidPW)
         *ptr_isValidPW = n;
     }
     // if input is 1,
-    else if (strcmp(sPWInput, "1") == 0)
+    else if (strcmp(sPWInput, "0") == 0)
     {
         // go back to main menu
     }
@@ -219,7 +219,7 @@ askPassword(int * ptr_isValidPW)
     else if (strcmp(sPWInput, sADMINPW) != 0)
     {
         printf("Incorrect Password. Try again.\n");
-        printf("[1] Go back to Main Menu\n\n");
+        printf("[0] Go back to Main Menu\n\n");
         // re-attempt to ask password
         askPassword(ptr_isValidPW);
     }
@@ -385,7 +385,7 @@ editRecord(struct RecordTag Records[], int nSize)
     }
     
     // if user opted to go back to main menu
-    if (strcmp(sInputTopic, "1") == 0)
+    if (strcmp(sInputTopic, "0") == 0)
     {
         // exit
     }
@@ -487,7 +487,7 @@ editRecord(struct RecordTag Records[], int nSize)
                 break;
         }
         printf("----- Edit successful -----\n");
-        printf("\n[1] Go back to Main Menu\n\n");
+        printf("\n[0] Go back to Main Menu\n\n");
         editRecord(Records, nSize);
     }
 }
@@ -530,12 +530,12 @@ deleteRecord(struct RecordTag Records[], int * nSize)
         }
     }
     
-    // if inputted topic is not in records
-    if (strcmp(sInputTopic, "1") == 0)
+    // if user opted to go back to main menu
+    if (strcmp(sInputTopic, "0") == 0)
     {
         // exit
     }
-    // if user opted to go back to main menu
+    // if inputted topic is not in records
     else if (!bValid)
     {
         printf("There are no records with the topic you entered.\n");
@@ -583,6 +583,14 @@ deleteRecord(struct RecordTag Records[], int * nSize)
             }
             *nSize = (*nSize - 1);
             printf("----- Delete successful -----\n");
+            
+            printf("\nDo you want to delete another record? (y/n)\n\n");
+            scanf("%s", &cInput);
+            
+            if (cInput == 'y')
+            {
+                *nSize = *deleteRecord(Records, nSize);
+            }
         }
     }
     return nSize;
@@ -647,7 +655,8 @@ importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize, int i
     // else, push through with importing data
     else
     {
-        printf("----- Importing Data -----\n\n");
+        if (!isPlay)
+            printf("----- Importing Data -----\n\n");
         
         while ((fscanf(fp, "%s\n", sfTopic) == 1) && (!(strcmp(sfTopic, "\n") == 0)))
         {
@@ -958,6 +967,7 @@ playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int 
     int i, j;
     bool isPlaying = 1;
     bool bIsStored = 0;
+    bool bIsEmpty = 0;
     int isValidFile = 0;
     int isFound = 0;
     
@@ -966,17 +976,28 @@ playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int 
     // initialize number of non-empty elements in sQuesArray
     int nQues = 0;
     
-    // Enter player name
-    printf("Enter your name: ");
-    
-    // store value to struct array
-    scanf("%s", CurrentPlayRec->sCP_Name);
-    
-    // initialize score of player to zero
-    CurrentPlayRec->nCP_Score = 0;
-    
     // import records data
     *nSize = *importData(Records, &isValidFile, nSize, 1);
+    
+    if (*nSize == 1)
+    {
+        printf("There are currently no records available to play.\n");
+        isPlaying = 0;
+        bIsEmpty = 1;
+    }
+    else
+    {
+
+        // Enter player name
+        printf("Enter your name: ");
+        
+        // store value to struct array
+        scanf("%s", CurrentPlayRec->sCP_Name);
+        
+        // initialize score of player to zero
+        CurrentPlayRec->nCP_Score = 0;
+        
+    }
     
     while (isPlaying)
     {
@@ -1037,7 +1058,7 @@ playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int 
                     }
                     
                     // print current score
-                    printf("Current Score: %d\n", CurrentPlayRec->nCP_Score);
+                    printf("----- SCORE : %d -----\n\n", CurrentPlayRec->nCP_Score);
                     
                     // randomize questions under the topic
                     srand(time(0));
@@ -1070,18 +1091,21 @@ playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int 
                     if (strcmp(sInputAnswer, CurrentPlayRec->sCP_Answer) == 0)
                     {
                         CurrentPlayRec->nCP_Score++;
+                        printf("\n[0] Go back to menu\n");
                     }
                     else
                     {
                         printf("Sorry, incorrect answer. | ");
                         printf("Correct: %s\n", CurrentPlayRec->sCP_Answer);
+                        printf("\n[0] Go back to menu\n");
                     }
                 }
             }
-            printf("Total score: %d\n", CurrentPlayRec->nCP_Score);
+            printf("----- SCORE : %d -----\n\n", CurrentPlayRec->nCP_Score);
         }
     }
-    exportScore(CurrentPlayRec);
+    if (!bIsEmpty)
+        exportScore(CurrentPlayRec);
     *nSize = *backMenu(Records, nSize);
 }
 
