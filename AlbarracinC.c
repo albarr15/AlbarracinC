@@ -263,7 +263,7 @@ int * addRecord(struct RecordTag Records[], int * nSize)
 {
     char inputQuestion[Q_SIZE];
     char inputAnswer[CA_SIZE];
-    int nExistingTopic = 1;
+    int nExistingTopics = 1;
     
     printf("Adding a record ...\n");
     
@@ -314,13 +314,13 @@ int * addRecord(struct RecordTag Records[], int * nSize)
             {
                 if (strcmp(Records[last_index].sTopic, Records[j].sTopic) == 0)
                 {
-                    nExistingTopic++;
+                    nExistingTopics++;
                 }
             }
         }
         
         // assign nQNum
-        Records[last_index].nQNum = nExistingTopic;
+        Records[last_index].nQNum = nExistingTopics;
         
         printf("Added successfully: ");
         printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[last_index].sTopic, Records[last_index].nQNum, Records[last_index].sQuestion, Records[last_index].sChoice1, Records[last_index].sChoice2, Records[last_index].sChoice3, Records[last_index].sAnswer);
@@ -339,9 +339,9 @@ int * addRecord(struct RecordTag Records[], int * nSize)
 /*
  editRecord allows the admin to edit a field in an existing record
  @param Records is an array of structures which stores the records
- nSize indicates the current number of non-empty elements of the array Records
+        nSize indicates the current number of non-empty elements of the array Records
  @return <none>
- Pre-condition: When editing topic, the new topic must not be the same as existing ones
+ Pre-condition: When editing topic, the new topic must not be the same as previous one
  */
 void editRecord(struct RecordTag Records[], int nSize)
 {
@@ -349,7 +349,7 @@ void editRecord(struct RecordTag Records[], int nSize)
     int nRecord;
     int nIndex;
     int nInput;
-    int nExistingTopic = 1;
+    int nExistingTopics = 1;
     int bValid = 0;
     
     printf("Editing a record...\n");
@@ -359,7 +359,7 @@ void editRecord(struct RecordTag Records[], int nSize)
     printf("Enter the topic you want to edit: ");
     scanf("%s", sInputTopic);
     
-    //print all questions with the topic
+    // print all questions with the topic along with its question number
     for (int i = 0; i < nSize; i++)
     {
         // print and indicate that inputted topic is existing in the records
@@ -370,12 +370,12 @@ void editRecord(struct RecordTag Records[], int nSize)
         }
     }
     
-    // if inputted topic is not in records
+    // if user opted to go back to main menu
     if (strcmp(sInputTopic, "1") == 0)
     {
         // exit
     }
-    // if user opted to go back to main menu
+    // if inputted topic is not in records
     else if (!bValid)
     {
         printf("There are no records with the topic you entered.\n");
@@ -395,6 +395,8 @@ void editRecord(struct RecordTag Records[], int nSize)
         }
         
         printf("\n");
+        
+        
         // display the current record to help guide user
         displayRecord(Records, nIndex);
         
@@ -433,13 +435,13 @@ void editRecord(struct RecordTag Records[], int nSize)
                         // do not include j is at the last_index
                         if (strcmp(Records[nIndex].sTopic, Records[k].sTopic) == 0)
                         {
-                            nExistingTopic++;
+                            nExistingTopics++;
                         }
                     }
                 }
                 
                 // assign nQNum
-                Records[nIndex].nQNum = nExistingTopic;
+                Records[nIndex].nQNum = nExistingTopics;
                 break;
                 
             case 2:
