@@ -41,7 +41,7 @@ struct CurrentPlayTag
 void displayMenu();
 void displaymanageData();
 void displayRecord(struct RecordTag Records[], int i);
-void displayUniqTopics(struct RecordTag Records[], int nSize);
+void displayUniqueTopics(struct RecordTag Records[], int nSize);
 void getInput(char sentence[], int LEN);
 void askPassword(int * ptr_isValidPW);
 int * addRecord(struct RecordTag Records[], int * nSize);
@@ -72,7 +72,7 @@ void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int
 void
 displayMenu()
 {
-    printf("GENERAL KNOWLEDGE QUIZ GAME\n\n");
+    printf("-----GENERAL KNOWLEDGE QUIZ GAME-----\n\n");
     printf("[1] Manage Data\n");
     printf("[2] Play\n");
     printf("[3] Exit\n");
@@ -111,13 +111,13 @@ void displayRecord(struct RecordTag Records[], int i)
     printf("Answer: %s\n", Records[i].sAnswer);
 }
 
-/* displayUniqTopics shows all current records without duplicates
+/* displayUniqueTopics shows all current records without duplicates
  @param Records is an array of structures which stores the records
  i is the index of the array which will be displayed
  @return <none>
  Pre-condition: <none>
  */
-void displayUniqTopics(struct RecordTag Records[], int s)
+void displayUniqueTopics(struct RecordTag Records[], int s)
 {
     for (int i = 0; i < s; i++)
     {
@@ -344,7 +344,7 @@ void editRecord(struct RecordTag Records[], int nSize)
     
     printf("Editing a record...\n");
     
-    displayUniqTopics(Records, nSize);
+    displayUniqueTopics(Records, nSize);
     
     printf("Enter the topic you want to edit: ");
     scanf("%s", sInputTopic);
@@ -486,7 +486,7 @@ int * deleteRecord(struct RecordTag Records[], int * nSize)
     printf("Deleting a record...\n");
     
     // display unique topics
-    displayUniqTopics(Records, *nSize);
+    displayUniqueTopics(Records, *nSize);
     
     printf("Enter the topic you want to delete: ");
     scanf("%s", sInputTopic);
@@ -663,7 +663,7 @@ int * importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize,
                 // iterate
                 i++;
             }
-            
+
         }
     }
     return nSize;
@@ -950,7 +950,7 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec,
         {
             nQues = 0;
             
-            displayUniqTopics(Records, *Asize);
+            displayUniqueTopics(Records, *Asize);
             
             printf("Enter the topic you want to focus on: ");
             scanf("%s", sInputTopic);
