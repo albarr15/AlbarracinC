@@ -896,7 +896,7 @@ void manageData(struct RecordTag Records[], int * nSize)
 
 /*
  exportScore adds the current score of the current player in score.txt
- @param CurrentPlayRec is a struct wherein the name and score is stored
+ @param *CurrentPlayRec is a pointer to the struct CurrentPlayRec wherein the name and score is stored
  @return <none>
  Pre-condition: score.txt is already existing in the computer
  */
@@ -923,7 +923,7 @@ void exportScore(struct CurrentPlayTag * CurrentPlayRec)
 
 /* playQuiz allows the user to play the quiz game which contains all records that have been exported
  @param Records is an array of structures which stores the records
- CurrentPlayRec is a struct wherein the name and score is stored
+ *CurrentPlayRec is a pointer to the struct CurrentPlayRec wherein the name and score is stored
  *nSize is a pointer to the variable nSize which indicates the current number of non-empty elements of the array Records
  @return <none>
  Pre-condition: <none>
@@ -1064,6 +1064,7 @@ void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec,
 }
 
 /* viewScores shows all current scores inside the file "score.txt"
+ @param <none>
  @return <none>
  Pre-condition: score.txt is existing
  */
@@ -1108,7 +1109,9 @@ void viewScores()
 }
 
 /* Play allows the user to play the quiz, view the scores, as well as go back to the Main Menu
- @param <none>
+ @param Records is an array of structures which stores the records
+ *CurrentPlayRec is a pointer to the struct CurrentPlayRec wherein the name and score is stored
+ nSize is an integer which indicates the current number of non-empty elements of the array Records
  @return <none>
  Pre-condition: User has selected Play from the Main Menu and has not yet opted to go back to Main Menu
  */
@@ -1152,11 +1155,14 @@ void Play(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int
 
 int main()
 {
-    int nInput;
     bool bIsQuit = 0;
+    int nInput;
+    
+    int nSize = 1;
     struct RecordTag Records[REC_SIZE];
     struct CurrentPlayTag CurrentPlayRec;
-    int nSize = 1;
+    
+    // clear previous contents of masterfile
     updateMasterFile(Records, nSize, 'w');
     
     do
