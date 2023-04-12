@@ -1,20 +1,24 @@
 /*********************************************************************************************************
- This is to certify that this project is my own work, based on my personal efforts in studying and applying the concepts learned. I have constructed the functions and their respective algorithms and corresponding code by myself. The program was run, tested, and debugged by my own efforts. I further certify that I have not copied in part or whole or otherwise plagiarized the work of other students and/or persons.
- Clarissa M. Albarracin, DLSU ID# 12206563 *********************************************************************************************************/
+ This is to certify that this project is my own work, based on my personal efforts in studying and applying the concepts learned.
+ I have constructed the functions and their respective algorithms and corresponding code by myself. The program was run, tested,
+ and debugged by my own efforts. I further certify that I have not copied in part or whole or otherwise plagiarized the work of
+ other students and/or persons.
+ Clarissa M. Albarracin, DLSU ID# 12206563
+ *********************************************************************************************************/
 
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-// #include <conio.h>
+#include <conio.h>
 
 #define TPC_SIZE 20
 #define Q_SIZE 150
 #define CA_SIZE 30
 #define REC_SIZE 50
 #define FN_SIZE 30
-#define NAME_SIZE 21
+#define NAME_SIZE 19
 
 struct RecordTag
 {
@@ -59,14 +63,6 @@ void manageData(struct RecordTag Records[], int * nSize);
 void playQuiz(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int * nSize);
 void viewScores();
 void QuizGame(struct RecordTag Records[], struct CurrentPlayTag *CurrentPlayRec, int nSize);
-
-
-/*
- NOTES TO SELF:
- - In order to implement password masking, include conio.h and uncomment code in askPassword function
- - Add function descriptions when finished
- - maintain consistency in formats of variable names for better readability
- */
 
 
 /* displayMenu shows the Graphic User Interface for the menu of the General Knowledge Quiz Game
@@ -142,7 +138,7 @@ displayUniqueTopics(struct RecordTag Records[], int s)
  @param sentence is a string where all characters before newline is stored
  nLength is the maximum size the sentence can have
  @return <none>
- Pre-condition: <none>
+ Pre-condition: sentence must not exceed nLength - 1
  */
 void
 getInput(char sentence[], int nLength)
@@ -178,13 +174,12 @@ askPassword(int * ptr_isValidPW)
 {
     const char sADMINPW[] = "Genquiz411";
     char sPWInput[11];
-    // char ch;
-    // int i = 0;
+    char ch;
+    int i = 0;
     int n = 0;
     
     printf("Please input admin password: ");
     
-    /*
      // Mask password with asterisks
      // if character entered is NOT the enter key
      while ((ch = _getch()) != 13)
@@ -197,10 +192,6 @@ askPassword(int * ptr_isValidPW)
      // add null byte to specify end of string
      sPWInput[i] = '\0';
      printf("\n");
-     */
-    
-    // use only when editing in MacOS
-    scanf("%s", sPWInput);
     
     // if password is correct
     if (strcmp(sPWInput, sADMINPW) == 0)
@@ -210,7 +201,7 @@ askPassword(int * ptr_isValidPW)
         n = 1;
         *ptr_isValidPW = n;
     }
-    // if input is 1,
+    // if input is 0,
     else if (strcmp(sPWInput, "0") == 0)
     {
         // go back to main menu
@@ -246,6 +237,7 @@ isQandA_Existing(struct RecordTag Records[], int * nSize, char Question[Q_SIZE],
         if ((strcmp(Records[i].sQuestion, Question) == 0) && (strcmp(Records[i].sAnswer, Answer) == 0))
         {
             // print record
+            printf("\n");
             displayRecord(Records, i);
             bIsRecorded = 1;
             return 1;
@@ -269,6 +261,7 @@ isQandA_Existing(struct RecordTag Records[], int * nSize, char Question[Q_SIZE],
  *nSize is a pointer to the variable nSize which indicates the current number of non-empty elements of the array Records
  @return nSize wherein nSize will be iterated by 1 if addition of record is successful
  Pre-condition: The answer to be inputted by the user must be the same as only one of Choice1, Choice2, or Choice3.
+                inputQuestion must not exceed Q_SIZE
  */
 int *
 addRecord(struct RecordTag Records[], int * nSize)
@@ -298,7 +291,7 @@ addRecord(struct RecordTag Records[], int * nSize)
     
     if (nResult == 1)
     {
-        printf("Q and A are already existing.\n");
+        printf("Q and A are already existing.\n\n");
     }
     
     // if not yet recorded,
@@ -335,10 +328,7 @@ addRecord(struct RecordTag Records[], int * nSize)
         Records[last_index].nQNum = nExistingTopics;
         
         printf("\n----- Addition successful -----\n\n");
-        displayRecord(Records, last_index);
-        printf("\n");
-        // printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[last_index].sTopic, Records[last_index].nQNum, Records[last_index].sQuestion, Records[last_index].sChoice1, Records[last_index].sChoice2, Records[last_index].sChoice3, Records[last_index].sAnswer);
-        
+ 
         // add 1 to current struct array size
         *nSize = (*nSize + 1);
     }
@@ -355,6 +345,7 @@ addRecord(struct RecordTag Records[], int * nSize)
         nSize indicates the current number of non-empty elements of the array Records
  @return <none>
  Pre-condition: When editing topic, the new topic must not be the same as previous one
+                inputQuestion must not exceed Q_SIZE
  */
 void
 editRecord(struct RecordTag Records[], int nSize)
@@ -487,7 +478,7 @@ editRecord(struct RecordTag Records[], int nSize)
                 break;
         }
         printf("----- Edit successful -----\n");
-        printf("\n[0] Go back to Main Menu\n\n");
+        printf("\n[0] Go back to manageData Menu\n\n");
         editRecord(Records, nSize);
     }
 }
@@ -530,7 +521,7 @@ deleteRecord(struct RecordTag Records[], int * nSize)
         }
     }
     
-    // if user opted to go back to main menu
+    // if user opted to go back to manageData menu
     if (strcmp(sInputTopic, "0") == 0)
     {
         // exit
@@ -639,7 +630,7 @@ importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize, int i
     }
     
     // if user inputted 1
-    if (strcmp(sFilename, "1") == 0)
+    if (strcmp(sFilename, "0") == 0)
     {
         n = 1;
         *ptr_isValidFile = n;
@@ -649,7 +640,7 @@ importData(struct RecordTag Records[], int * ptr_isValidFile, int * nSize, int i
     else if ((fp = fopen(sFilename, "r")) == NULL)
     {
         fprintf(stderr, "ERROR: %s does not exist.\n", sFilename);
-        printf("[1] Go back to Manage Data Menu\n\n");
+        printf("[0] Go back to Manage Data Menu\n\n");
         importData(Records, ptr_isValidFile, nSize, 0);
     }
     // else, push through with importing data
@@ -767,7 +758,7 @@ exportData(struct RecordTag Records[], int nSize)
  nSize indicates the current number of non-empty elements of the array Records
  char mode indicates whether or not the masterfile will be opened in append or write mode
  @return <none>
- Pre-condition: masterfile is already existing in computer's files
+ Pre-condition: masterfile is already existing in computer's files, modes must only be 'a'' or 'w'
  */
 void
 updateMasterFile(struct RecordTag Records[], int nSize, char mode)
@@ -850,6 +841,7 @@ backMenu(struct RecordTag Records[], int * nSize)
     {
         strcpy((Records[i]).sTopic, "");
         (Records[i]).nQNum = 0;
+        strcpy((Records[i]).sQuestion, "");
         strcpy((Records[i]).sChoice1, "");
         strcpy((Records[i]).sChoice2, "");
         strcpy((Records[i]).sChoice3, "");
@@ -933,7 +925,7 @@ manageData(struct RecordTag Records[], int * nSize)
 void
 exportScore(struct CurrentPlayTag * CurrentPlayRec)
 {
-    // export data to the file "stored-records.txt" (this will be the master file for all records)
+    // export data to the file "score.txt" (this will be the master file for all records)
     FILE * fp3 = NULL;
     
     // declare array for filename
@@ -1129,18 +1121,19 @@ viewScores()
     char sfName[51];
     int nfScore;
     
-    printf("Row #\t");
-    printf("Player Name\t");
-    printf("Score\t\n");
+    
     
     while ((fscanf(fp, "%s\n", sfName) == 1) && (!feof(fp)))
     {
-        printf("%d\t", nRow);
+          printf("Row #\t");
+          printf("Player Name\t");
+          printf("Score\t\n");
+        printf("  %-6d", nRow);
         nRow++;
-        printf("%s\t\t", sfName);
+        printf("%-18s", sfName);
         // get score
         fscanf(fp, "%d\n", &nfScore);
-        printf("%d\t\n", nfScore);
+        printf("%d\n", nfScore);
     }
     
     if (strcmp(sfName, "") == 0)
@@ -1242,12 +1235,6 @@ main()
         
     }
     while (bIsQuit == 0);
-    
-    // USED FOR DEBUGGING ONLY (prints out records)
-    for (int i = 0; i < (nSize - 1); i++)
-    {
-        printf("%s, %d, %s, %s, %s, %s, %s\n\n", Records[i].sTopic, Records[i].nQNum, Records[i].sQuestion, Records[i].sChoice1, Records[i].sChoice2, Records[i].sChoice3, Records[i].sAnswer);
-    }
     
     return 0;
 }
