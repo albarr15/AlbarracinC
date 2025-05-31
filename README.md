@@ -1,2 +1,6 @@
 # AlbarracinC
+Albarracin, Clarissa M.
+
+To run: run the executable AlbarracinC.exe on your command prompt.
+
 This C-based application implements a General Knowledge Quiz System with a modular architecture, featuring distinct administrative and user interfaces. The system leverages extensive use of pointers for efficient memory management and dynamic data manipulation. It utilizes file I/O operations for persistent data management, storing quiz content and user performance metrics in structured text files.
